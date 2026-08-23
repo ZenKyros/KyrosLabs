@@ -101,9 +101,9 @@ export default function NotePage() {
   const note = slug ? vault.bySlug.get(slug) : undefined;
 
   useEffect(() => {
-    if (note) document.title = `${note.meta.title} — KYROS AI Knowledge Lab`;
+    if (note) document.title = `${note.meta.title} — KyrosLabs`;
     return () => {
-      document.title = "KYROS — AI Knowledge Lab";
+      document.title = "KyrosLabs — AI Knowledge Lab";
     };
   }, [note]);
 

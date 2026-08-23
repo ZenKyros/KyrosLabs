@@ -44,26 +44,28 @@ export default function Home() {
             </div>
           </Reveal>
 
-          <h1 className="mt-8 font-display font-bold tracking-[-0.03em] leading-[1.04] text-[clamp(2.7rem,6.5vw,4.7rem)]">
+          <h1 className="mt-8 font-display font-bold tracking-[-0.035em] leading-[1.02] text-[clamp(3rem,7.5vw,5.4rem)]">
             <Reveal delay={80}>
               <span className="reveal-mask">
-                <span>An evolving map of</span>
+                <span>
+                  Kyros<span className="text-accent">Labs</span>
+                </span>
               </span>
             </Reveal>
             <br />
             <Reveal delay={180}>
               <span className="reveal-mask">
                 <span>
-                  <em className="font-serif2 italic font-medium text-accent">artificial intelligence.</em>
+                  <em className="font-serif2 italic font-medium text-accent">AI Knowledge Lab</em>
                 </span>
               </span>
             </Reveal>
           </h1>
 
           <Reveal delay={280}>
-            <p className="mt-7 text-[16px] text-muted leading-relaxed max-w-[52ch]">
-              Kyros is my personal knowledge lab — {stats.concepts} concepts, {stats.papers} papers,{" "}
-              {stats.projects} projects and {stats.research} research threads, all written as plain{" "}
+            <p className="mt-7 text-[16px] text-muted leading-relaxed max-w-[54ch]">
+              An evolving map of artificial intelligence. {stats.concepts} concepts, {stats.papers} papers,{" "}
+              {stats.projects} projects and {stats.research} research threads — all written as plain{" "}
               <code className="font-mono2 text-[13px] text-accent">.md</code> files and woven into one
               explorable graph.
             </p>

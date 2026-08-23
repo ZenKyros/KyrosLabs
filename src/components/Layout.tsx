@@ -27,6 +27,7 @@ const NAV = [
   { to: "/graph", label: "Graph" },
   { to: "/roadmap", label: "Roadmap" },
   { to: "/research", label: "Research" },
+  { to: "/about", label: "About" },
 ];
 
 export default function Layout() {
@@ -64,10 +65,10 @@ export default function Layout() {
     const path = location.pathname;
     const note = path.startsWith("/note/") ? vault.bySlug.get(path.slice(6)) : undefined;
     document.title = note
-      ? `${note.meta.title} · Kyros`
+      ? `${note.meta.title} · KyrosLabs`
       : path === "/"
-      ? "Kyros · AI Knowledge Lab"
-      : `${path.slice(1)[0]?.toUpperCase() ?? ""}${path.slice(2)} · Kyros`;
+      ? "KyrosLabs · AI Knowledge Lab"
+      : `${path.slice(1)[0]?.toUpperCase() ?? ""}${path.slice(2)} · KyrosLabs`;
     window.scrollTo(0, 0);
     setMenuOpen(false);
   }, [location]);
@@ -84,7 +85,9 @@ export default function Layout() {
           <Link to="/" className="group flex items-center gap-3 mr-auto">
             <BrandMark />
             <span className="leading-none">
-              <span className="block font-display font-bold text-[17px] tracking-tight">Kyros</span>
+              <span className="block font-display font-bold text-[17px] tracking-tight">
+                Kyros<span className="text-accent">Labs</span>
+              </span>
               <span className="hidden sm:block text-[10.5px] font-medium tracking-[0.08em] uppercase text-faint mt-0.5">
                 AI Knowledge Lab
               </span>
@@ -199,10 +202,18 @@ export default function Layout() {
           <div>
             <Link to="/" className="group flex items-center gap-3 w-fit">
               <BrandMark size={30} />
-              <span className="font-display font-bold text-[19px] tracking-tight">Kyros</span>
+              <span className="font-display font-bold text-[19px] tracking-tight">
+                Kyros<span className="text-accent">Labs</span>
+              </span>
             </Link>
             <p className="text-[13.5px] text-muted leading-relaxed mt-4 max-w-[30ch]">
               An evolving map of artificial intelligence — every page rendered from plain Markdown.
+            </p>
+            <p className="text-[12.5px] text-faint mt-3">
+              Built by{" "}
+              <Link to="/about" className="text-muted hover:text-accent transition-colors font-medium">
+                Roshan Yadav
+              </Link>
             </p>
           </div>
           <div>
@@ -241,7 +252,7 @@ export default function Layout() {
         </div>
         <div className="border-t border-linesoft">
           <div className="max-w-6xl mx-auto px-5 py-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-faint">
-            <span>© 2026 Kyros · AI Knowledge Lab</span>
+            <span>© 2026 KyrosLabs · AI Knowledge Lab</span>
             <span className="hidden sm:inline">Markdown in → knowledge graph out.</span>
             <button
               onClick={() => setSearchOpen(true)}

@@ -1,5 +1,5 @@
 /**
- * KYROS AI KNOWLEDGE LAB
+ * KYROSLABS — AI KNOWLEDGE LAB
  *
  * Architecture:  Markdown vault  →  content engine (src/engine)
  *              →  graph / search / roadmap  →  renderer (src/pages)
@@ -17,6 +17,7 @@ import Roadmap from "./pages/Roadmap";
 import Research from "./pages/Research";
 import NotePage from "./pages/NotePage";
 import CategoryPage from "./pages/CategoryPage";
+import About from "./pages/About";
 
 function NotFound() {
   return (
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="research" element={<Research />} />
           <Route path="note/:slug" element={<NotePage />} />
           <Route path="category/*" element={<CategoryPage />} />
+          <Route path="about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
