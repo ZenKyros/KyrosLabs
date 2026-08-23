@@ -1,31 +1,25 @@
 /**
- * Layout — navbar, ambient backdrop, footer, ⌘K palette, page transitions.
+ * Layout — navbar, page-transition shell, footer.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Search, Sun, Moon, Menu, X, ArrowUpRight } from "lucide-react";
 import SearchPalette from "./SearchPalette";
 import { vault } from "../engine/vault";
 
-function useTheme(): [string, () => void] {
-  const [theme, setTheme] = useState(() =>
-    document.documentElement.classList.contains("light") ? "light" : "dark"
+function BrandMark({ size = 26 }: { size?: number }) {
+  return (
+    <span
+      className="inline-flex items-center justify-center rounded-lg bg-accent text-accentink flex-none transition-transform duration-300 group-hover:rotate-90"
+      style={{ width: size, height: size }}
+    >
+      <svg width={size * 0.62} height={size * 0.62} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+        <path d="M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9" />
+      </svg>
+    </span>
   );
-  const toggle = useCallback(() => {
-    setTheme((t) => {
-      const next = t === "dark" ? "light" : "dark";
-      document.documentElement.classList.replace(t, next);
-      try {
-        localStorage.setItem("kyros-theme", next);
-      } catch {
-        /* private mode */
-      }
-      return next;
-    });
-  }, []);
-  return [theme, toggle];
 }
 
 const NAV = [
@@ -36,50 +30,75 @@ const NAV = [
 ];
 
 export default function Layout() {
-  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">(() =>
+    typeof document !== "undefined" && document.documentElement.classList.contains("dark") ? "dark" : "light"
+  );
+  const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, toggleTheme] = useTheme();
   const location = useLocation();
+  const reduced =
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    try {
+      localStorage.setItem("kyros-theme", theme);
+    } catch {
+      /* private mode */
+    }
+  }, [theme]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setPaletteOpen((o) => !o);
+        setSearchOpen((s) => !s);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // page title + scroll restore per route
   useEffect(() => {
+    const path = location.pathname;
+    const note = path.startsWith("/note/") ? vault.bySlug.get(path.slice(6)) : undefined;
+    document.title = note
+      ? `${note.meta.title} · Kyros`
+      : path === "/"
+      ? "Kyros · AI Knowledge Lab"
+      : `${path.slice(1)[0]?.toUpperCase() ?? ""}${path.slice(2)} · Kyros`;
+    window.scrollTo(0, 0);
     setMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-  }, [location.pathname]);
+  }, [location]);
+
+  const dur = reduced ? 0 : 0.5;
 
   return (
     <div className="min-h-screen flex flex-col">
       <div className="lab-backdrop" aria-hidden />
 
       {/* ————— navbar ————— */}
-      <header className="sticky top-0 z-50 border-b border-line bg-bg/85 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-5 h-14 flex items-center gap-6">
-          <Link to="/" className="flex items-baseline gap-2 group" aria-label="KYROS home">
-            <span className="font-display font-bold text-[17px] tracking-[0.04em]">KYROS</span>
-            <span className="w-[7px] h-[7px] bg-accent inline-block group-hover:rotate-45 transition-transform duration-300" />
-            <span className="hidden sm:block font-mono2 text-[10px] tracking-[0.22em] uppercase text-muted -mb-[1px]">
-              AI Knowledge Lab
+      <header className="sticky top-0 z-50 border-b border-line bg-bg/80 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto px-5 h-16 flex items-center gap-7">
+          <Link to="/" className="group flex items-center gap-3 mr-auto">
+            <BrandMark />
+            <span className="leading-none">
+              <span className="block font-display font-bold text-[17px] tracking-tight">Kyros</span>
+              <span className="hidden sm:block text-[10.5px] font-medium tracking-[0.08em] uppercase text-faint mt-0.5">
+                AI Knowledge Lab
+              </span>
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6 ml-4">
+          <nav className="hidden md:flex items-center gap-7">
             {NAV.map((n) => (
               <NavLink
                 key={n.to}
                 to={n.to}
                 className={({ isActive }) =>
-                  `nav-sweep font-mono2 text-[11px] tracking-[0.18em] uppercase transition-colors ${
-                    isActive ? "text-ink active" : "text-muted hover:text-ink"
+                  `nav-sweep text-[13.5px] font-medium transition-colors ${
+                    isActive ? "active text-ink" : "text-muted hover:text-ink"
                   }`
                 }
               >
@@ -88,129 +107,154 @@ export default function Layout() {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setPaletteOpen(true)}
-              className="flex items-center gap-2.5 border border-line rounded-md pl-3 pr-2 py-1.5 text-muted hover:text-ink hover:border-faint transition-colors cursor-pointer"
-              aria-label="Open search"
+              onClick={() => setSearchOpen(true)}
+              className="flex items-center gap-2.5 h-9 pl-3 pr-2 rounded-full border border-line bg-panel text-muted hover:text-ink hover:border-faint hover:shadow-[var(--shadow-sm)] transition-all cursor-pointer"
+              aria-label="Search"
             >
-              <Search size={13} />
-              <span className="hidden lg:block text-[12.5px]">Search vault</span>
-              <span className="hidden sm:flex items-center gap-0.5">
-                <kbd className="kbd">⌘</kbd>
-                <kbd className="kbd">K</kbd>
-              </span>
+              <Search size={14} />
+              <span className="hidden sm:block text-[12.5px] font-medium">Search</span>
+              <kbd className="kbd hidden sm:block">⌘K</kbd>
             </button>
             <button
-              onClick={toggleTheme}
-              className="p-2 border border-line rounded-md text-muted hover:text-ink hover:border-faint transition-colors cursor-pointer"
+              onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+              className="w-9 h-9 rounded-full border border-line bg-panel flex items-center justify-center text-muted hover:text-ink hover:border-faint transition-all cursor-pointer"
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
+              <motion.span
+                key={theme}
+                initial={reduced ? false : { rotate: -90, opacity: 0, scale: 0.6 }}
+                animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="flex"
+              >
+                {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+              </motion.span>
             </button>
             <button
-              onClick={() => setMenuOpen((o) => !o)}
-              className="md:hidden p-2 border border-line rounded-md text-muted hover:text-ink cursor-pointer"
+              onClick={() => setMenuOpen((m) => !m)}
+              className="md:hidden w-9 h-9 rounded-full border border-line bg-panel flex items-center justify-center text-muted hover:text-ink transition-colors cursor-pointer"
               aria-label="Menu"
             >
-              {menuOpen ? <X size={14} /> : <Menu size={14} />}
+              {menuOpen ? <X size={16} /> : <Menu size={16} />}
             </button>
           </div>
         </div>
 
         {/* mobile menu */}
-        {menuOpen && (
-          <nav className="md:hidden border-t border-line bg-panel px-5 py-4 flex flex-col gap-4">
-            {NAV.map((n) => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                className={({ isActive }) =>
-                  `font-mono2 text-[12px] tracking-[0.18em] uppercase ${isActive ? "text-accent" : "text-muted"}`
-                }
-              >
-                {n.label}
-              </NavLink>
-            ))}
-          </nav>
-        )}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.nav
+              initial={reduced ? false : { height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={reduced ? undefined : { height: 0, opacity: 0 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="md:hidden overflow-hidden border-t border-line bg-panel"
+            >
+              <div className="px-5 py-5 flex flex-col">
+                {[{ to: "/", label: "Home" }, ...NAV].map((n, i) => (
+                  <motion.div
+                    key={n.to}
+                    initial={reduced ? false : { x: -14, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.06 + i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <NavLink
+                      to={n.to}
+                      className={({ isActive }) =>
+                        `flex items-center justify-between py-3.5 border-b border-linesoft font-display font-semibold text-[20px] tracking-tight ${
+                          isActive ? "text-accent" : "text-ink"
+                        }`
+                      }
+                    >
+                      {n.label}
+                      <ArrowUpRight size={17} className="text-faint" />
+                    </NavLink>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.nav>
+          )}
+        </AnimatePresence>
       </header>
 
-      {/* ————— page ————— */}
-      <main className="flex-1">
-        <motion.div
+      {/* ————— page with epic enter/exit ————— */}
+      <AnimatePresence mode="wait">
+        <motion.main
           key={location.pathname}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: [0.2, 0.6, 0.2, 1] }}
+          className="flex-1"
+          initial={reduced ? false : { opacity: 0, y: 28, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={reduced ? undefined : { opacity: 0, y: -18, filter: "blur(4px)" }}
+          transition={{ duration: dur, ease: [0.16, 1, 0.3, 1] }}
         >
           <Outlet />
-        </motion.div>
-      </main>
+        </motion.main>
+      </AnimatePresence>
 
       {/* ————— footer ————— */}
-      <footer className="border-t border-line mt-24">
-        <div className="max-w-6xl mx-auto px-5 py-12 grid gap-10 md:grid-cols-[1.3fr_1fr_1fr]">
+      <footer className="mt-24 border-t border-line bg-panel/60">
+        <div className="max-w-6xl mx-auto px-5 py-14 grid md:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-10">
           <div>
-            <div className="flex items-baseline gap-2">
-              <span className="font-display font-bold text-[15px]">KYROS</span>
-              <span className="w-[6px] h-[6px] bg-accent inline-block" />
-              <span className="font-mono2 text-[10px] tracking-[0.2em] uppercase text-muted">AI Knowledge Lab</span>
-            </div>
-            <p className="text-[13px] text-muted leading-relaxed mt-3 max-w-xs">
-              An evolving map of artificial intelligence — every page rendered from plain Markdown,
-              every connection discovered automatically.
+            <Link to="/" className="group flex items-center gap-3 w-fit">
+              <BrandMark size={30} />
+              <span className="font-display font-bold text-[19px] tracking-tight">Kyros</span>
+            </Link>
+            <p className="text-[13.5px] text-muted leading-relaxed mt-4 max-w-[30ch]">
+              An evolving map of artificial intelligence — every page rendered from plain Markdown.
             </p>
           </div>
           <div>
-            <div className="kicker mb-4">Index</div>
+            <div className="text-[11px] font-semibold tracking-[0.12em] uppercase text-faint mb-4">Explore</div>
             <ul className="space-y-2.5">
-              {[...NAV, { to: "/", label: "Home" }].map((n) => (
-                <li key={n.to}>
-                  <Link to={n.to} className="group flex items-center gap-1.5 text-[13px] text-muted hover:text-accent transition-colors">
-                    {n.label}
-                    <ArrowUpRight size={11} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+              {[{ to: "/knowledge", label: "Knowledge" }, { to: "/graph", label: "Graph" }, { to: "/roadmap", label: "Roadmap" }, { to: "/research", label: "Research" }].map((l) => (
+                <li key={l.to}>
+                  <Link to={l.to} className="text-[13.5px] text-muted hover:text-accent transition-colors">
+                    {l.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
           <div>
-            <div className="kicker mb-4">Vault status</div>
-            <ul className="font-mono2 text-[11.5px] text-muted space-y-2.5">
-              <li className="flex justify-between gap-4">
-                <span>notes indexed</span>
-                <span className="text-ink">{vault.stats.totalNotes}</span>
-              </li>
-              <li className="flex justify-between gap-4">
-                <span>graph edges</span>
-                <span className="text-ink">{vault.stats.graphEdges}</span>
-              </li>
-              <li className="flex justify-between gap-4">
-                <span>categories</span>
-                <span className="text-ink">{vault.stats.categories}</span>
-              </li>
-              <li className="flex justify-between gap-4">
-                <span>words written</span>
-                <span className="text-ink">{vault.stats.words.toLocaleString()}</span>
-              </li>
+            <div className="text-[11px] font-semibold tracking-[0.12em] uppercase text-faint mb-4">Categories</div>
+            <ul className="space-y-2.5">
+              {vault.categories.slice(0, 5).map((c) => (
+                <li key={c.id}>
+                  <Link to={`/category/${c.id}`} className="text-[13.5px] text-muted hover:text-accent transition-colors">
+                    {c.label}
+                    <span className="text-faint ml-1.5 font-mono2 text-[11px]">{c.count}</span>
+                  </Link>
+                </li>
+              ))}
             </ul>
+          </div>
+          <div>
+            <div className="text-[11px] font-semibold tracking-[0.12em] uppercase text-faint mb-4">Colophon</div>
+            <p className="text-[13px] text-muted leading-relaxed">
+              {vault.stats.totalNotes} notes · {vault.stats.papers} papers · {vault.stats.graphEdges} connections —
+              discovered from <code className="font-mono2 text-[11.5px] text-accent">src/content/vault</code> at build time.
+              No CMS, no database. Edit a <code className="font-mono2 text-[11.5px] text-accent">.md</code> file, push, done.
+            </p>
           </div>
         </div>
         <div className="border-t border-linesoft">
-          <div className="max-w-6xl mx-auto px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-2 justify-between">
-            <span className="font-mono2 text-[10.5px] tracking-[0.14em] uppercase text-faint">
-              © 2026 Kyros · rendered from src/content/vault
-            </span>
-            <span className="flex items-center gap-2 font-mono2 text-[10.5px] tracking-[0.14em] uppercase text-faint">
-              <span className="pulse-dot" />
-              markdown → knowledge graph → website
-            </span>
+          <div className="max-w-6xl mx-auto px-5 py-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-faint">
+            <span>© 2026 Kyros · AI Knowledge Lab</span>
+            <span className="hidden sm:inline">Markdown in → knowledge graph out.</span>
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="ml-auto flex items-center gap-2 hover:text-accent transition-colors cursor-pointer"
+            >
+              <Search size={12} />
+              Press <kbd className="kbd">⌘K</kbd> to search
+            </button>
           </div>
         </div>
       </footer>
 
-      <SearchPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+      <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 }

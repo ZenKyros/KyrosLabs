@@ -80,11 +80,10 @@ export function TagList({ tags, to = true }: { tags: string[]; to?: boolean }) {
 
 /* ————— section kickers: "§ 01 — KNOWLEDGE" ————— */
 
-export function Kicker({ index, children, className = "" }: { index?: string; children: ReactNode; className?: string }) {
+export function Kicker({ children, className = "" }: { index?: string; children: ReactNode; className?: string }) {
   return (
-    <div className={`kicker flex items-center gap-3 ${className}`}>
-      {index && <span className="text-accent">{index}</span>}
-      <span className="h-px w-8 bg-line inline-block" />
+    <div className={`kicker flex items-center gap-2.5 ${className}`}>
+      <span className="inline-block w-1.5 h-1.5 rounded-full bg-accent" aria-hidden />
       {children}
     </div>
   );

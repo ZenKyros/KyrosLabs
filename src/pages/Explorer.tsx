@@ -65,12 +65,10 @@ export default function Explorer() {
     <div className="max-w-6xl mx-auto px-5 pt-14">
       <Kicker index="§">Knowledge explorer</Kicker>
       <div className="mt-5 flex flex-wrap items-end justify-between gap-6">
-        <h1 className="font-display font-bold tracking-tight text-[clamp(2.2rem,5vw,3.4rem)] leading-none">
+        <h1 className="font-display font-bold tracking-[-0.025em] text-[clamp(2.4rem,5vw,3.6rem)] leading-[1.05]">
           Every note,
           <br />
-          <span className="text-transparent" style={{ WebkitTextStroke: "1px var(--muted)" }}>
-            one index.
-          </span>
+          <span className="text-accent">one index.</span>
         </h1>
         <p className="text-[13.5px] text-muted max-w-xs leading-relaxed pb-1">
           {vault.stats.totalNotes} documents discovered recursively from{" "}
