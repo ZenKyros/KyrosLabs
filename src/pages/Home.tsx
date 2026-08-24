@@ -48,7 +48,7 @@ export default function Home() {
             <Reveal delay={80}>
               <span className="reveal-mask">
                 <span>
-                  Kyros<span className="text-accent">Labs</span>
+                  Keas<span className="text-accent">AI</span>
                 </span>
               </span>
             </Reveal>
@@ -56,7 +56,7 @@ export default function Home() {
             <Reveal delay={180}>
               <span className="reveal-mask">
                 <span>
-                  <em className="font-serif2 italic font-medium text-accent">AI Knowledge Lab</em>
+                  <em className="font-sans font-medium text-accent">Learn Ai with KeasAI Labs </em>
                 </span>
               </span>
             </Reveal>

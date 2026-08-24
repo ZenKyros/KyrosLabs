@@ -1,5 +1,5 @@
 /**
- * /about — Roshan Yadav, the person behind KyrosLabs.
+ * /about — Roshan Yadav, the person behind KeasAI .
  */
 
 import { Link } from "react-router-dom";
@@ -275,7 +275,7 @@ export default function About() {
         <div className="rounded-2xl border border-line bg-panel p-8 shadow-[var(--shadow-sm)]">
           <Kicker className="mb-4">Why this lab exists</Kicker>
           <p className="font-serif2 italic text-[16.5px] text-muted leading-relaxed max-w-[64ch]">
-            KyrosLabs is where I organize everything I learn — from linear algebra to RLHF — as plain Markdown that
+            KeasAI is where I organize everything I learn — from linear algebra to RLHF — as plain Markdown that
             compiles into one explorable knowledge graph. It&rsquo;s my brain, externalized. Start anywhere below.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
