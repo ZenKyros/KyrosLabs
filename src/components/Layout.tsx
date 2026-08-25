@@ -26,7 +26,6 @@ function BrandMark({ size = 26 }: { size?: number }) {
 const NAV = [
   { to: "/knowledge", label: "Notes" },
   { to: "/graph", label: "Graph" },
-  { to: "/research", label: "Research" },
   { to: "/about", label: "About" },
 ];
 
@@ -219,7 +218,7 @@ export default function Layout() {
           <div>
             <div className="text-[11px] font-semibold tracking-[0.12em] uppercase text-faint mb-4">Explore</div>
             <ul className="space-y-2.5">
-              {[{ to: "/knowledge", label: "Knowledge" }, { to: "/graph", label: "Graph" }, { to: "/roadmap", label: "Roadmap" }, { to: "/research", label: "Research" }].map((l) => (
+              {[{ to: "/knowledge", label: "Knowledge" }, { to: "/graph", label: "Graph" }].map((l) => (
                 <li key={l.to}>
                   <Link to={l.to} className="text-[13.5px] text-muted hover:text-accent transition-colors">
                     {l.label}
@@ -244,7 +243,7 @@ export default function Layout() {
           <div>
             <div className="text-[11px] font-semibold tracking-[0.12em] uppercase text-faint mb-4">Colophon</div>
             <p className="text-[13px] text-muted leading-relaxed">
-              {vault.stats.totalNotes} notes · {vault.stats.papers} papers · {vault.stats.graphEdges} connections —
+              {vault.stats.totalNotes} notes · {vault.stats.papers} papers —
               discovered from <code className="font-mono2 text-[11.5px] text-accent">src/content/vault</code> at build time.
               No CMS, no database. Edit a <code className="font-mono2 text-[11.5px] text-accent">.md</code> file, push, done.
             </p>

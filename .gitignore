@@ -1,19 +1,18 @@
-```
+```gitignore
 # Dependencies
 node_modules/
 
-# Build artifacts
+# Build outputs
 dist/
 build/
-*.js.map
-*.ts.map
+*.tsbuildinfo
 
 # Environment variables
 .env
 .env.local
 *.env.*
 
-# IDE files
+# Editors
 .vscode/
 .idea/
 *.swp
@@ -27,20 +26,27 @@ coverage/
 htmlcov/
 .coverage
 
-# Temporary files
-*.tmp
-.DS_Store
-Thumbs.db
-
-# Python cache
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.nox/
+.pytest_cache/
+.mypy_cache/
 
-# TypeScript/JavaScript cache
-.nyc_output/
-coverage/
+# Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # OS generated files
 .DS_Store
