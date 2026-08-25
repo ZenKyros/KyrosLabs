@@ -5,7 +5,7 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Compass, FlaskConical } from "lucide-react";
 import { vault } from "../engine/vault";
-import { Kicker, Reveal, StatusBadge, TagList, formatDate, TYPE_COLOR } from "../components/ui";
+import { Kicker, Reveal, TagList, formatDate, TYPE_COLOR } from "../components/ui";
 import type { VaultNote } from "../engine/types";
 
 const ANATOMY = [
@@ -70,7 +70,6 @@ export default function Research() {
                       <Compass size={12} />
                       Research
                     </span>
-                    <StatusBadge status={n.meta.status} />
                     {n.meta.updated && (
                       <span className="font-mono2 text-[10px] tracking-[0.14em] uppercase text-faint">
                         {formatDate(n.meta.updated)}

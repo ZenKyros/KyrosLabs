@@ -26,7 +26,6 @@ function BrandMark({ size = 26 }: { size?: number }) {
 const NAV = [
   { to: "/knowledge", label: "Notes" },
   { to: "/graph", label: "Graph" },
-  { to: "/roadmap", label: "Roadmap" },
   { to: "/research", label: "Research" },
   { to: "/about", label: "About" },
 ];

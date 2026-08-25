@@ -8,7 +8,7 @@ import { ArrowUpRight, ArrowRight, Search } from "lucide-react";
 import { vault, categoryLabel } from "../engine/vault";
 import { topConnected } from "../engine/graph";
 import KnowledgeGraph from "../components/KnowledgeGraph";
-import { Kicker, NoteRow, Reveal, StatusBadge, TagList, TypeChip, formatDate, useCountUp, useInView, TYPE_COLOR } from "../components/ui";
+import { Kicker, NoteRow, Reveal, TagList, TypeChip, formatDate, useCountUp, useInView, TYPE_COLOR } from "../components/ui";
 
 function Stat({ value, label, start }: { value: number; label: string; start: boolean }) {
   const n = useCountUp(value, start);
@@ -36,37 +36,28 @@ export default function Home() {
       <section className="grid lg:grid-cols-[1.15fr_1fr] gap-12 items-center pt-16 lg:pt-24 pb-8">
         <div>
           <Reveal>
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-line bg-panel px-4 py-2 shadow-[var(--shadow-sm)]">
-              <span className="pulse-dot" />
-              <span className="text-[12px] font-medium text-muted">
-                {stats.totalNotes} notes indexed from Markdown · {stats.graphEdges} connections discovered
-              </span>
-            </div>
+            <h1 className="font-display font-bold tracking-[-0.035em] leading-[1.02] text-[clamp(3rem,7.5vw,5.4rem)]">
+              <Reveal delay={80}>
+                <span className="reveal-mask">
+                  <span>
+                    Keas<span className="text-accent">AI</span>
+                  </span>
+                </span>
+              </Reveal>
+              <br />
+              <Reveal delay={180}>
+                <span className="reveal-mask">
+                  <span>
+                    <em className="font-sans font-medium text-accent">Learn AI with KeasAI Labs</em>
+                  </span>
+                </span>
+              </Reveal>
+            </h1>
           </Reveal>
-
-          <h1 className="mt-8 font-display font-bold tracking-[-0.035em] leading-[1.02] text-[clamp(3rem,7.5vw,5.4rem)]">
-            <Reveal delay={80}>
-              <span className="reveal-mask">
-                <span>
-                  Keas<span className="text-accent">AI</span>
-                </span>
-              </span>
-            </Reveal>
-            <br />
-            <Reveal delay={180}>
-              <span className="reveal-mask">
-                <span>
-                  <em className="font-sans font-medium text-accent">Learn Ai with KeasAI Labs </em>
-                </span>
-              </span>
-            </Reveal>
-          </h1>
 
           <Reveal delay={280}>
             <p className="mt-7 text-[16px] text-muted leading-relaxed max-w-[54ch]">
-              An evolving map of artificial intelligence. {stats.concepts} concepts, {stats.papers} papers,{" "}
-              {stats.projects} projects and {stats.research} research threads — all written as plain{" "}
-              <code className="font-mono2 text-[13px] text-accent">.md</code> files and woven into one
+              An evolving map of artificial intelligence — concepts, papers, projects and research threads woven into one
               explorable graph.
             </p>
           </Reveal>
@@ -123,7 +114,7 @@ export default function Home() {
       </Reveal>
 
       {/* ————— continue learning ————— */}
-      <section className="mt-24 grid lg:grid-cols-[1fr_290px] gap-10">
+      <section className="mt-24">
         <div>
           <Reveal>
             <Kicker>Continue learning</Kicker>
@@ -139,47 +130,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-        <aside className="space-y-4">
-          <Reveal delay={150}>
-            <div className="rounded-2xl border border-line bg-panel p-6 shadow-[var(--shadow-sm)]">
-              <div className="text-[11px] font-semibold tracking-[0.12em] uppercase text-faint">Now learning</div>
-              <ul className="mt-4 space-y-3.5">
-                {vault.notes
-                  .filter((n) => n.meta.status === "learning")
-                  .slice(0, 4)
-                  .map((n) => (
-                    <li key={n.slug}>
-                      <Link to={`/note/${n.slug}`} className="group flex items-center justify-between gap-3">
-                        <span className="text-[13.5px] font-medium group-hover:text-accent transition-colors">
-                          {n.meta.title}
-                        </span>
-                        <StatusBadge status={n.meta.status} />
-                      </Link>
-                    </li>
-                  ))}
-              </ul>
-              <Link to="/knowledge" className="mt-5 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-accent">
-                Browse all notes <ArrowRight size={13} />
-              </Link>
-            </div>
-          </Reveal>
-          <Reveal delay={220}>
-            <div className="rounded-2xl border border-line bg-panel p-6 shadow-[var(--shadow-sm)]">
-              <div className="text-[11px] font-semibold tracking-[0.12em] uppercase text-faint">Frontier status</div>
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                {(["understood", "implemented", "learning", "research"] as const).map((s) => {
-                  const c = vault.notes.filter((n) => n.meta.status === s).length;
-                  return (
-                    <div key={s} className="rounded-xl bg-panel2 px-4 py-3">
-                      <div className="font-display font-bold text-[1.4rem] leading-none tabular-nums">{c}</div>
-                      <div className="text-[10.5px] font-semibold tracking-[0.1em] uppercase text-faint mt-1.5 capitalize">{s}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </Reveal>
-        </aside>
       </section>
 
       {/* ————— explore categories ————— */}
@@ -294,7 +244,7 @@ export default function Home() {
                 >
                   <div className="flex items-center gap-3">
                     <TypeChip type="research" />
-                    <StatusBadge status={r.meta.status} />
+                    
                     <span className="ml-auto text-[11.5px] text-faint">updated {r.meta.updated ? formatDate(r.meta.updated) : ""}</span>
                   </div>
                   <h3 className="mt-4 font-display font-bold text-[1.35rem] tracking-tight group-hover:text-accent transition-colors">
