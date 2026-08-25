@@ -74,7 +74,7 @@ export default function SearchPalette({ open, onClose }: { open: boolean; onClos
           transition={{ duration: 0.18 }}
           onMouseDown={(e) => e.target === e.currentTarget && onClose()}
         >
-          <div className="absolute inset-0 bg-bg2/70 backdrop-blur-[3px]" onMouseDown={onClose} />
+          <div className="absolute inset-0 bg-bg2/70 backdrop-blur-[5px]" onMouseDown={onClose} />
           <motion.div
             className="relative w-full max-w-2xl bg-panel border border-line rounded-lg shadow-[var(--shadow)] overflow-hidden"
             initial={{ y: 14, scale: 0.985, opacity: 0 }}
@@ -102,7 +102,7 @@ export default function SearchPalette({ open, onClose }: { open: boolean; onClos
                   }
                 }}
                 placeholder={`Search ${vault.stats.totalNotes} notes, papers, projects…`}
-                className="w-full bg-transparent py-4 outline-none text-[15px] placeholder:text-faint"
+                className="w-full bg-transparent py-5 outline-none text-[15px] placeholder:text-faint"
                 aria-label="Search the vault"
               />
               <kbd className="kbd hidden sm:block">esc</kbd>

@@ -3,7 +3,7 @@
  */
 
 import { Link } from "react-router-dom";
-import { Github, Twitter, MapPin, GraduationCap, ArrowUpRight, ArrowRight } from "lucide-react";
+import { Github, Twitter, MapPin, GraduationCap, ArrowUpRight, ArrowRight,Linkedin } from "lucide-react";
 import { Kicker, Reveal } from "../components/ui";
 import { vault } from "../engine/vault";
 
@@ -42,46 +42,40 @@ function InfraIcon() {
 const FOCUS = [
   {
     icon: <NlpIcon />,
-    title: "Natural Language Processing",
-    body: "Fine-tuning transformer models in PyTorch, from tokenization and pretraining objectives through instruction tuning and alignment.",
+    title: "AI Engineering",
+    body: "Building practical AI systems and learning how to take ideas from models and prototypes to reliable real-world applications",
   },
   {
     icon: <MultimodalIcon />,
-    title: "Multimodal Systems",
-    body: "Fusing acoustic, linguistic and visual signals — like real-time fraud detection that reasons over sound and speech together.",
+    title: "LLMs & AI Agents",
+    body: "Exploring LLMs and learning to build AI agents that can reason, use tools, and work through real-world tasks.",
   },
   {
     icon: <InfraIcon />,
-    title: "Backend Infrastructure",
-    body: "FastAPI microservices, SQL Server data pipelines and LLM orchestration — the engineering that makes models reliable in production.",
+    title: "AI Systems",
+    body: "Working with the engineering foundations behind AI applications, from APIs and databases to model integration and deployment.",
   },
 ];
 
 const TIMELINE = [
   {
-    when: "Now",
+    when: "2026 → Present",
     role: "Intern — Unisys India",
-    body: "Optimizing enterprise data migration pipelines with SQL Server and GenAI tooling, and exploring LLM orchestration at scale.",
+    body: "Gaining real-world experience in databases, LLMs, and agentic AI development.",
     accent: true,
   },
-  {
-    when: "Project",
-    role: "Real-time Fraud Detection",
-    body: "A system that analyzes acoustic and linguistic signals using game-theoretic solvers to flag fraud as it happens.",
-    accent: false,
-  },
+ 
   {
     when: "2022 → 2026",
     role: "B.E. Computer Science — NMIT, Bengaluru",
-    body: "Grounding in algorithms, systems and machine learning — the theory this lab keeps trying to make practical.",
+    body: "Completed my B.E. in Computer Science, with a focus on machine learning and building practical projects.",
     accent: false,
   },
 ];
 
 const STACK = [
   "PyTorch", "Transformers", "NLP", "Multimodal", "FastAPI", "SQL Server",
-  "GenAI Tooling", "LLM Orchestration", "Python", "Microservices",
-];
+  "GenAI Tooling", "LLM Orchestration", "Python", "MY SQL", "Git", "Linux", "Docker", "C++" , "Java"];
 
 export default function About() {
   const stats = vault.stats;
@@ -101,9 +95,12 @@ export default function About() {
           </h1>
           <Reveal delay={120}>
             <p className="mt-5 text-[16.5px] text-muted leading-relaxed max-w-[56ch]">
-              A Computer Science student at <span className="text-ink font-medium">NMIT Bengaluru</span>, passionate
-              about bridging the gap between <span className="text-ink font-medium">theoretical deep learning</span>{" "}
-              and <span className="text-ink font-medium">scalable engineering</span>.
+              A Computer Science graduate from{" "}
+<span className="text-ink font-medium">NMIT, Bengaluru</span>, currently an{" "}
+<span className="text-ink font-medium">intern at Unisys India</span>, focused
+on becoming a strong{" "}
+<span className="text-ink font-medium">AI Engineer</span> and learning to build
+real-world AI systems and agents.
             </p>
           </Reveal>
           <Reveal delay={200}>
@@ -119,13 +116,13 @@ export default function About() {
                 <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </a>
               <a
-                href="https://x.com/ZenKyros"
+                href="https://www.linkedin.com/in/roshan-yadav-623b812a3/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex items-center gap-2.5 rounded-full border border-line bg-panel px-5 py-3 text-[13.5px] font-semibold text-ink hover:border-faint hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)] transition-all"
               >
-                <Twitter size={15} />
-                X / Twitter
+                <Linkedin size={15} />
+                Roshan Yadav
                 <ArrowUpRight size={14} className="text-faint group-hover:text-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
               </a>
             </div>
@@ -193,12 +190,13 @@ export default function About() {
             <Kicker className="mb-5">Longer version</Kicker>
             <div className="space-y-5 font-serif2 text-[16px] leading-[1.8] text-muted">
               <p>
-                My technical focus centers on <strong className="text-ink font-semibold">Natural Language Processing</strong>,{" "}
-                <strong className="text-ink font-semibold">multimodal systems</strong>, and{" "}
-                <strong className="text-ink font-semibold">backend infrastructure</strong>. I enjoy tackling complex
-                architectural problems — from building real-time fraud detection systems that analyze acoustic and
-                linguistic signals using game-theoretic solvers, to optimizing enterprise data migration pipelines with
-                SQL Server and GenAI tools at Unisys India.
+                My goal is to become a strong{" "}
+                <strong className="text-ink font-semibold">AI Engineer</strong>, with a focus
+                on learning to build real-world AI systems and{" "}
+                <strong className="text-ink font-semibold">AI agents</strong>. I’m focused on
+                gaining the skills and experience needed to build AI that is practical,
+                reliable, and genuinely useful.
+
               </p>
               <p>
                 Whether I&rsquo;m fine-tuning transformer models in PyTorch, building FastAPI microservices, or exploring
@@ -273,26 +271,15 @@ export default function About() {
       {/* ————— how this lab fits ————— */}
       <Reveal className="mt-20">
         <div className="rounded-2xl border border-line bg-panel p-8 shadow-[var(--shadow-sm)]">
-          <Kicker className="mb-4">Why this lab exists</Kicker>
+          <Kicker className="mb-4">Birth of  KeasAI </Kicker>
           <p className="font-serif2 italic text-[16.5px] text-muted leading-relaxed max-w-[64ch]">
-            KeasAI is where I organize everything I learn — from linear algebra to RLHF — as plain Markdown that
-            compiles into one explorable knowledge graph. It&rsquo;s my brain, externalized. Start anywhere below.
+            KeasAI is my initiative to regularly document what I learn, explore, and
+            build. I keep adding notes and topics as I learn, turning them into a
+            growing, connected knowledge base that I can keep building on over time.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <Link
-              to="/roadmap"
-              className="group inline-flex items-center gap-2 bg-accent text-accentink rounded-full px-5 py-3 text-[13.5px] font-semibold hover:-translate-y-0.5 hover:shadow-[var(--shadow)] transition-all"
-            >
-              See my learning roadmap
-              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              to="/research"
-              className="group inline-flex items-center gap-2 rounded-full border border-line px-5 py-3 text-[13.5px] font-semibold text-ink hover:border-faint hover:-translate-y-0.5 hover:shadow-[var(--shadow-sm)] transition-all"
-            >
-              Read my research notes
-              <ArrowUpRight size={14} className="text-faint group-hover:text-accent transition-colors" />
-            </Link>
+            
+          
           </div>
         </div>
       </Reveal>

@@ -12,7 +12,7 @@ import KnowledgeGraph from "../components/KnowledgeGraph";
 import { Kicker, Reveal, TYPE_COLOR, TYPE_LABEL, TagList } from "../components/ui";
 import type { NoteType } from "../engine/types";
 
-const TYPES: (NoteType | "all")[] = ["all", "concept", "paper", "project", "research"];
+const TYPES: (NoteType | "all")[] = ["all", "concept", "paper", ];
 
 export default function GraphPage() {
   const [params, setParams] = useSearchParams();

@@ -8,6 +8,7 @@ import { vault, getAdjacency } from "./vault";
 import type { GraphNodeDatum, Relationship, VaultNote } from "./types";
 
 export interface GraphData {
+  links: any;
   nodes: GraphNodeDatum[];
   edges: Relationship[];
 }
@@ -21,6 +22,7 @@ export function buildGraph(notes: VaultNote[] = vault.notes, edges: Relationship
     degree.set(e.target, (degree.get(e.target) ?? 0) + 1);
   }
   return {
+    links: filtered,
     nodes: notes.map((note) => ({ note, degree: degree.get(note.slug) ?? 0 })),
     edges: filtered,
   };

@@ -7,15 +7,13 @@ import { useSearchParams } from "react-router-dom";
 import { ArrowUpDown } from "lucide-react";
 import { vault, categoryLabel } from "../engine/vault";
 import { Kicker, NoteRow, Reveal, TYPE_COLOR, TYPE_LABEL } from "../components/ui";
-import type { NoteStatus, NoteType } from "../engine/types";
-import { STATUS_META } from "../components/ui";
+import type { NoteType } from "../engine/types";
+
 
 const TYPE_FILTERS: { id: NoteType | "all"; label: string }[] = [
   { id: "all", label: "All" },
   { id: "concept", label: "Concepts" },
   { id: "paper", label: "Papers" },
-  { id: "project", label: "Projects" },
-  { id: "research", label: "Research" },
   { id: "note", label: "Notes" },
 ];
 
@@ -26,7 +24,6 @@ export default function Explorer() {
   const [type, setType] = useState<NoteType | "all">((params.get("type") as NoteType) ?? "all");
   const [category, setCategory] = useState(params.get("cat") ?? "all");
   const [level, setLevel] = useState(params.get("level") ?? "all");
-  const [status, setStatus] = useState<NoteStatus | "all">((params.get("status") as NoteStatus) ?? "all");
   const [tag, setTag] = useState(params.get("tag") ?? "all");
   const [sort, setSort] = useState<"title" | "updated">("updated");
 
@@ -35,7 +32,6 @@ export default function Explorer() {
       if (type !== "all" && n.meta.type !== type) return false;
       if (category !== "all" && n.category !== category) return false;
       if (level !== "all" && n.meta.level !== level) return false;
-      if (status !== "all" && n.meta.status !== status) return false;
       if (tag !== "all" && !n.meta.tags.includes(tag)) return false;
       return true;
     });
@@ -45,7 +41,7 @@ export default function Explorer() {
         : (b.meta.updated ?? "").localeCompare(a.meta.updated ?? "") || a.meta.title.localeCompare(b.meta.title)
     );
     return list;
-  }, [type, category, level, status, tag, sort]);
+  }, [type, category, level, tag, sort]);
 
   const setTagBoth = (t: string) => {
     setTag(t);
@@ -127,21 +123,6 @@ export default function Explorer() {
                 {LEVELS.map((l) => (
                   <option key={l} value={l}>
                     {l[0].toUpperCase() + l.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <div className="kicker mb-3.5">Status</div>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as NoteStatus | "all")}
-                className="w-full bg-panel border border-line rounded-md px-2.5 py-2 text-[12.5px] text-muted outline-none focus:border-accent cursor-pointer"
-              >
-                <option value="all">Any</option>
-                {(Object.keys(STATUS_META) as NoteStatus[]).map((s) => (
-                  <option key={s} value={s}>
-                    {STATUS_META[s].label}
                   </option>
                 ))}
               </select>

@@ -24,7 +24,6 @@ export default function Home() {
   const { stats, recent, categories } = vault;
   const constellation = useMemo(() => topConnected(18), []);
   const papers = vault.notes.filter((n) => n.meta.type === "paper");
-  const research = vault.notes.filter((n) => n.meta.type === "research");
   const [statsRef, statsInView] = useInView<HTMLDivElement>(0.4);
 
   const citeCount = (slug: string) =>
@@ -48,7 +47,7 @@ export default function Home() {
               <Reveal delay={180}>
                 <span className="reveal-mask">
                   <span>
-                    <em className="font-sans font-medium text-accent">Learn AI with KeasAI Labs</em>
+                    <em className="keasai-glitter font-sans font-mono2 font-medium text-accent text-[0.65em]">Learn AI with KeasAI Labs</em>
                   </span>
                 </span>
               </Reveal>
@@ -57,7 +56,7 @@ export default function Home() {
 
           <Reveal delay={280}>
             <p className="mt-7 text-[16px] text-muted leading-relaxed max-w-[54ch]">
-              An evolving map of artificial intelligence — concepts, papers, projects and research threads woven into one
+              An evolving map of artificial intelligence — concepts, papers, and projects woven into one
               explorable graph.
             </p>
           </Reveal>
@@ -107,7 +106,6 @@ export default function Home() {
           <Stat value={stats.totalNotes} label="Notes" start={statsInView} />
           <Stat value={stats.concepts} label="Concepts" start={statsInView} />
           <Stat value={stats.papers} label="Papers" start={statsInView} />
-          <Stat value={stats.projects} label="Projects" start={statsInView} />
           <Stat value={stats.graphEdges} label="Graph edges" start={statsInView} />
           <Stat value={stats.words} label="Words written" start={statsInView} />
         </div>
@@ -221,47 +219,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ————— research desk ————— */}
-      {research.length > 0 && (
-        <section className="mt-24">
-          <Reveal className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <Kicker>Research desk</Kicker>
-              <h2 className="mt-4 font-display font-bold tracking-tight text-[clamp(1.7rem,3.5vw,2.4rem)]">
-                Open hypotheses
-              </h2>
-            </div>
-            <Link to="/research" className="group inline-flex items-center gap-2 text-[13.5px] font-semibold text-muted hover:text-accent transition-colors pb-1">
-              All research <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </Reveal>
-          <div className="mt-8 grid md:grid-cols-2 gap-4">
-            {research.map((r, i) => (
-              <Reveal key={r.slug} delay={i * 90}>
-                <Link
-                  to={`/note/${r.slug}`}
-                  className="lift group block h-full rounded-2xl border border-line bg-panel p-7 hover:border-blush/50"
-                >
-                  <div className="flex items-center gap-3">
-                    <TypeChip type="research" />
-                    
-                    <span className="ml-auto text-[11.5px] text-faint">updated {r.meta.updated ? formatDate(r.meta.updated) : ""}</span>
-                  </div>
-                  <h3 className="mt-4 font-display font-bold text-[1.35rem] tracking-tight group-hover:text-accent transition-colors">
-                    {r.meta.title}
-                  </h3>
-                  {r.meta.hypothesis && (
-                    <p className="mt-3 font-serif2 italic text-[14.5px] text-muted leading-relaxed line-clamp-3">
-                      “{r.meta.hypothesis}”
-                    </p>
-                  )}
-                </Link>
-              </Reveal>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ————— how it works ————— */}
       <section className="mt-24">
         <Reveal>
@@ -273,25 +230,40 @@ export default function Home() {
               </code>
             </div>
             <div className="mt-8 grid md:grid-cols-3 gap-8">
-              {[
-                { n: "01", t: "Write Markdown", d: "Drop a .md file anywhere in the vault. Frontmatter is optional metadata — the body is the truth." },
-                { n: "02", t: "Build discovers it", d: "Recursive discovery parses frontmatter, wikilinks, headings and math into a typed index." },
-                { n: "03", t: "The graph updates", d: "Routes, search, categories, relationships and statistics regenerate automatically." },
-              ].map((s, i) => (
-                <div key={s.n} className="relative">
-                  {i < 2 && (
-                    <div className="hidden md:block absolute top-5 left-[calc(100%-1.25rem)] w-[calc(100%-3.5rem)] h-px bg-line" aria-hidden>
-                      <ArrowRight size={12} className="absolute -right-1 -top-[5.5px] text-faint" />
-                    </div>
-                  )}
-                  <div className="w-10 h-10 rounded-full border border-line bg-panel2 flex items-center justify-center font-mono2 text-[12px] text-accent">
-                    {s.n}
-                  </div>
-                  <div className="mt-4 font-display font-semibold text-[16.5px] tracking-tight">{s.t}</div>
-                  <p className="mt-2 text-[13.5px] text-muted leading-relaxed">{s.d}</p>
-                </div>
-              ))}
-            </div>
+  {[
+    {
+      n: "01",
+      t: "Learn",
+      d: "Explore new ideas, concepts, and technologies through study, experiments, and hands-on work.",
+    },
+    {
+      n: "02",
+      t: "Document",
+      d: "Regularly turn what you learn, build, and discover into structured notes and topics.",
+    },
+    {
+      n: "03",
+      t: "Connect",
+      d: "KeasAI organizes everything into a growing, connected knowledge graph that evolves with me.",
+    },
+  ].map((s, i) => (
+    <div key={s.n} className="relative">
+  
+
+      <div className="w-10 h-10 rounded-full border border-line bg-panel2 flex items-center justify-center font-mono2 text-[12px] text-accent">
+        {s.n}
+      </div>
+
+      <div className="mt-4 font-display font-semibold text-[16.5px] tracking-tight">
+        {s.t}
+      </div>
+
+      <p className="mt-2 text-[13.5px] text-muted leading-relaxed">
+        {s.d}
+      </p>
+    </div>
+  ))}
+</div>
             <div className="mt-9 pt-7 border-t border-linesoft flex flex-wrap items-center gap-4">
               <Search size={15} className="text-faint" />
               <span className="text-[13.5px] text-muted">
