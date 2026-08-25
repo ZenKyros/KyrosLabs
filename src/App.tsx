@@ -13,8 +13,6 @@ import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Explorer from "./pages/Explorer";
 import GraphPage from "./pages/GraphPage";
-import Roadmap from "./pages/Roadmap";
-import Research from "./pages/Research";
 import NotePage from "./pages/NotePage";
 import CategoryPage from "./pages/CategoryPage";
 import About from "./pages/About";
@@ -47,8 +45,6 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="knowledge" element={<Explorer />} />
           <Route path="graph" element={<GraphPage />} />
-          <Route path="roadmap" element={<Roadmap />} />
-          <Route path="research" element={<Research />} />
           <Route path="note/:slug" element={<NotePage />} />
           <Route path="category/*" element={<CategoryPage />} />
           <Route path="about" element={<About />} />

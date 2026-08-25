@@ -10,7 +10,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, FileText, Network } from
 import { vault, getBacklinks, categoryLabel } from "../engine/vault";
 import { youAreHere } from "../engine/graph";
 import MarkdownRenderer from "../components/MarkdownRenderer";
-import { Kicker, Reveal, StatusBadge, TagList, TypeChip, formatDate, TYPE_COLOR } from "../components/ui";
+import { Kicker, Reveal, TagList, TypeChip, formatDate, TYPE_COLOR } from "../components/ui";
 import type { VaultNote } from "../engine/types";
 
 /* ————— table of contents with scrollspy ————— */
@@ -131,7 +131,7 @@ export default function NotePage() {
     return (
       <div className="max-w-3xl mx-auto px-5 pt-28 text-center">
         <div className="font-mono2 text-[12px] tracking-[0.2em] uppercase text-blush">404 · note not indexed</div>
-        <h1 className="font-display font-bold text-3xl mt-4">“{slug}” is not in the vault yet.</h1>
+        <h1 className="font-display font-bold text-3xl mt-4">"{slug}" is not in the vault yet.</h1>
         <p className="text-muted mt-3 text-[14px]">
           Create <code className="font-mono2 text-accent text-[12.5px]">src/content/vault/**/{slug}.md</code> and it will
           appear here automatically.
@@ -146,9 +146,6 @@ export default function NotePage() {
   const crumbs = youAreHere(note);
   const minutes = Math.max(1, Math.round(note.wordCount / 220));
   const isPaper = note.meta.type === "paper";
-  const isProject = note.meta.type === "project";
-  const isResearch = note.meta.type === "research";
-  const researchBacklinks = rel.backlinks.filter((n) => n.meta.type === "research");
 
   return (
     <div className="max-w-6xl mx-auto px-5 pt-10">
@@ -197,10 +194,6 @@ export default function NotePage() {
           )}
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 mt-6">
             <TypeChip type={note.meta.type} />
-            <StatusBadge status={note.meta.status} />
-            {note.meta.level && (
-              <span className="font-mono2 text-[10.5px] tracking-[0.16em] uppercase text-muted">{note.meta.level}</span>
-            )}
             {isPaper && note.meta.year && (
               <span className="font-mono2 text-[10.5px] tracking-[0.16em] uppercase text-gold">{note.meta.year}</span>
             )}
@@ -246,16 +239,6 @@ export default function NotePage() {
           </div>
         </Reveal>
       </header>
-
-      {/* research hypothesis banner */}
-      {isResearch && note.meta.hypothesis && (
-        <Reveal delay={120}>
-          <aside className="callout callout-math mt-10 max-w-3xl">
-            <div className="callout-title">Hypothesis</div>
-            <p className="font-serif2 italic text-[15.5px] !text-ink">{note.meta.hypothesis}</p>
-          </aside>
-        </Reveal>
-      )}
 
       {/* ————— article + toc ————— */}
       <div id="article" className="mt-12 grid lg:grid-cols-[minmax(0,1fr)_220px] gap-12 items-start">
@@ -303,29 +286,9 @@ export default function NotePage() {
             ) : (
               <RelSection title="Papers" notes={[...rel.papers, ...rel.outPapers.filter((p) => !rel.papers.includes(p))]} hintFor={() => "primary source"} />
             ))}
-            {isProject && <RelSection title="Concepts used" notes={rel.outConcepts} hintFor={() => "applied in this project"} />}
-            {!isProject && !isPaper && <RelSection title="Referenced by" notes={rel.backlinks} hintFor={(n) => `${n.meta.type} · links here`} />}
-            {isProject && <RelSection title="Research connections" notes={researchBacklinks} hintFor={() => "research · links here"} />}
-            {!isProject && rel.backlinks.length > 0 && isPaper && (
-              <RelSection title="Referenced by" notes={rel.backlinks} hintFor={(n) => `${n.meta.type} · links here`} />
-            )}
+            {!isPaper && <RelSection title="Referenced by" notes={rel.backlinks} hintFor={(n) => `${n.meta.type} · links here`} />}
           </div>
         </Reveal>
-
-        {isProject && note.meta.tech.length > 0 && (
-          <Reveal>
-            <div>
-              <div className="kicker mb-3.5">Technologies</div>
-              <div className="flex flex-wrap gap-2">
-                {note.meta.tech.map((t) => (
-                  <span key={t} className="font-mono2 text-[11px] tracking-[0.08em] border border-line rounded-md px-3 py-1.5 text-muted bg-panel">
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </Reveal>
-        )}
 
         {rel.next && (
           <Reveal>

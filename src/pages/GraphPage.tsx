@@ -9,7 +9,7 @@ import { Focus, X, ArrowUpRight } from "lucide-react";
 import { vault } from "../engine/vault";
 import { buildGraph, neighborhood, type GraphData } from "../engine/graph";
 import KnowledgeGraph from "../components/KnowledgeGraph";
-import { Kicker, Reveal, StatusBadge, TYPE_COLOR, TYPE_LABEL, TagList } from "../components/ui";
+import { Kicker, Reveal, TYPE_COLOR, TYPE_LABEL, TagList } from "../components/ui";
 import type { NoteType } from "../engine/types";
 
 const TYPES: (NoteType | "all")[] = ["all", "concept", "paper", "project", "research"];
@@ -173,7 +173,6 @@ export default function GraphPage() {
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            <StatusBadge status={focusNote.meta.status} />
             <Link
               to={`/note/${focusNote.slug}`}
               className="group inline-flex items-center gap-2 font-mono2 text-[11px] tracking-[0.16em] uppercase text-accent hover:brightness-125 transition-all w-fit"
