@@ -1,16 +1,11 @@
 ---
 title: Linear Algebra
-description: "Vectors, matrices and transformations — the coordinate system of machine learning."
 type: concept
 level: foundations
-status: mastered
+status: learning
 tags:
-  - math
+  - mathematics
   - linear-algebra
-related:
-  - calculus
-  - optimization
-updated: 2025-11-02
 ---
 
 #   Linear Algebra 

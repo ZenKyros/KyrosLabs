@@ -1,0 +1,200 @@
+{
+  "main": {
+    "id": "bcb024a254d41b0e",
+    "type": "split",
+    "children": [
+      {
+        "id": "89644ad96067266c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ae649e90c4ed503a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "ArtificiaL Intillegence/Foundations/Mathematics/Linear Algebra/Linear Algebra.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Linear Algebra"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "9ed620b64598f034",
+    "type": "split",
+    "children": [
+      {
+        "id": "b5308082a69dbe0e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "307736266971b256",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "fc49bc964b0e3e31",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "ad2484ae3524f9ca",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "f4d9bf589e85fd3b",
+    "type": "split",
+    "children": [
+      {
+        "id": "0d8cab37849c4bf7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4efa98ad8f4ecec9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "ArtificiaL Intillegence/Foundations/Mathematics/Linear Algebra/Linear Algebra.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "af9e9c58b5e243da",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "ArtificiaL Intillegence/Foundations/Mathematics/Linear Algebra/Linear Algebra.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "7ffcb9f47493f66c",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "1479fcfc4831c5ed",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "a9024a41ce60be4f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "ArtificiaL Intillegence/Foundations/Mathematics/Linear Algebra/Linear Algebra.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "ae649e90c4ed503a",
+  "lastOpenFiles": [
+    "ArtificiaL Intillegence/Kernel",
+    "ArtificiaL Intillegence/GPU Programming",
+    "ArtificiaL Intillegence/Foundations/Python/Python.md",
+    "ArtificiaL Intillegence/Foundations/Mathematics/Linear Algebra/Linear Algebra.md",
+    "ArtificiaL Intillegence/Deep Learning/Attention/attention.md",
+    "ArtificiaL Intillegence/Machine Learning/Feature Engineering/features.md"
+  ]
+}
