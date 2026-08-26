@@ -126,12 +126,14 @@ export default function MarkdownRenderer({ body }: { body: string }) {
     };
     return {
       h1: ({ children }) => (
-        <h1 id={slugifyHeading(String(children))} className="!text-2xl font-semibold mt-10">
+        <h1 id={slugifyHeading(nodeToText(children))} className="!text-2xl font-semibold mt-10">
           {children}
         </h1>
       ),
       h2: ({ children }) => {
-        const text = String(children);
+        // headings may contain inline nodes (code, emphasis…) — extract plain
+        // text so the id matches the TOC ids extracted from the raw markdown
+        const text = nodeToText(children);
         return (
           <h2 id={slugifyHeading(text)}>
             <a href={`#/note#`} onClick={(e) => { e.preventDefault(); document.getElementById(slugifyHeading(text))?.scrollIntoView({ behavior: "smooth" }); }} className="no-underline">
@@ -141,7 +143,7 @@ export default function MarkdownRenderer({ body }: { body: string }) {
         );
       },
       h3: ({ children }) => {
-        const text = String(children);
+        const text = nodeToText(children);
         return (
           <h3 id={slugifyHeading(text)}>{children}</h3>
         );

@@ -357,11 +357,13 @@ export default function FileSystemGraph({ data, focus = null, height = 560, clas
         node.fy = null;
       }
       if (d.moved < 6 && !(e as any).button) {
-        // Navigate to note if it's a note node
-        const nodeData = data.nodes.find(n => n.id === d.id);
+        // Navigate to note if it's a note node — the vault indexes notes by
+        // lowercased file basename, so derive the slug from the basename.
+        const nodeData = data.nodes.find((n) => n.id === d.id);
         if (nodeData && nodeData.type === "note") {
-          const slug = nodeData.path.replace("/src/content/vault/", "").replace(".md", "");
-          navigate(`/note/${slug}`);
+          const base = nodeData.path.split("/").pop() ?? "";
+          const slug = base.replace(/\.md$/i, "").trim().toLowerCase();
+          if (slug) navigate(`/note/${slug}`);
         }
       }
       alphaRef.current = Math.max(alphaRef.current, 0.2);

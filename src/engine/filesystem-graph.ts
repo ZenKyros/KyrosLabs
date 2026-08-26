@@ -113,8 +113,9 @@ export function buildFileSystemGraph(): FileSystemGraphData {
     const fileName = segments[segments.length - 1];
     const fileBase = fileName.replace(/\.md$/i, "");
 
-    // Skip README files
+    // Skip README files and stray files with no basename (e.g. ".md")
     if (/^readme$/i.test(fileBase)) continue;
+    if (!fileBase.trim()) continue;
 
     // Create folder nodes for all parent directories
     let currentParentId = rootId;
@@ -162,6 +163,8 @@ export function buildFileSystemGraph(): FileSystemGraphData {
       metadata: {
         title: fileBase,
         category: segments[0],
+        // vault slug (lowercased basename) so /graph?focus=<slug> can resolve to this node
+        slug: fileBase.trim().toLowerCase(),
       },
     });
 
@@ -193,6 +196,7 @@ export function buildFileSystemGraph(): FileSystemGraphData {
     const fileBase = fileName.replace(/\.md$/i, "");
 
     if (/^readme$/i.test(fileBase)) continue;
+    if (!fileBase.trim()) continue;
 
     const sourceNoteId = `note:${relativePath}`;
 

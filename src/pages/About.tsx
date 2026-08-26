@@ -5,7 +5,6 @@
 import { Link } from "react-router-dom";
 import { Github, Twitter, MapPin, GraduationCap, ArrowUpRight, ArrowRight,Linkedin } from "lucide-react";
 import { Kicker, Reveal } from "../components/ui";
-import { vault } from "../engine/vault";
 
 /* ————— custom hand-drawn focus icons ————— */
 function NlpIcon() {
@@ -78,8 +77,6 @@ const STACK = [
   "GenAI Tooling", "LLM Orchestration", "Python", "MY SQL", "Git", "Linux", "Docker", "C++" , "Java"];
 
 export default function About() {
-  const stats = vault.stats;
-
   return (
     <div className="max-w-6xl mx-auto px-5 pt-14">
       {/* ————— header ————— */}
@@ -164,21 +161,6 @@ real-world AI systems and agents.
                 Currently interning at Unisys India
               </div>
             </div>
-            <div className="mt-6 pt-5 border-t border-linesoft grid grid-cols-3 text-center">
-              {[
-                { v: stats.concepts, l: "concepts" },
-                { v: stats.papers, l: "papers" },
-                { v: stats.projects, l: "projects" },
-              ].map((s) => (
-                <div key={s.l}>
-                  <div className="font-display font-bold text-[22px] text-accent tabular-nums">{s.v}</div>
-                  <div className="text-[10.5px] font-semibold tracking-[0.1em] uppercase text-faint mt-0.5">{s.l}</div>
-                </div>
-              ))}
-            </div>
-            <p className="mt-5 text-[11.5px] text-faint leading-relaxed text-center">
-              Every number above is a note I wrote in this lab.
-            </p>
           </div>
         </Reveal>
       </div>

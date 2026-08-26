@@ -2,25 +2,174 @@
  * Home — opens with what this lab actually is: a living map of the vault.
  */
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, ArrowRight, Search } from "lucide-react";
+import { ArrowUpRight, ArrowRight, ExternalLink, FileText, Newspaper, RefreshCw } from "lucide-react";
 import { vault } from "../engine/vault";
 import { buildFileSystemGraph } from "../engine/filesystem-graph";
 import FileSystemGraph from "../components/FileSystemGraph";
-import { Kicker, Reveal, TagList, TYPE_COLOR } from "../components/ui";
+import { Kicker, Reveal, TagList } from "../components/ui";
+
+type PulseItem = {
+  title: string;
+  url: string;
+  source: string;
+  published: string;
+  kind: "news" | "paper";
+};
+
+const NEWS_FEED = "https://news.google.com/rss/search?q=artificial+intelligence+when:7d&hl=en-US&gl=US&ceid=US:en";
+
+function formatPulseDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Recently";
+  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric" }).format(date);
+}
+
+async function fetchPulse(): Promise<PulseItem[]> {
+  const [newsResult, papersResult] = await Promise.allSettled([
+    fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(NEWS_FEED)}`).then((response) => {
+      if (!response.ok) throw new Error("News feed unavailable");
+      return response.json();
+    }),
+    fetch("https://huggingface.co/api/daily_papers?limit=3").then((response) => {
+      if (!response.ok) throw new Error("Papers feed unavailable");
+      return response.json();
+    }),
+  ]);
+
+  const news: PulseItem[] = newsResult.status === "fulfilled"
+    ? (newsResult.value.items ?? []).slice(0, 3).map((item: { title: string; link: string; pubDate: string; author?: string }) => ({
+        title: item.title,
+        url: item.link,
+        source: item.author || "AI news",
+        published: item.pubDate,
+        kind: "news",
+      }))
+    : [];
+  const papers: PulseItem[] = papersResult.status === "fulfilled"
+    ? (papersResult.value ?? []).slice(0, 3).map((item: { paper: { title: string; id: string; publishedAt?: string; authors?: { name: string }[] } }) => ({
+        title: item.paper.title,
+        url: `https://huggingface.co/papers/${item.paper.id}`,
+        source: item.paper.authors?.[0]?.name ? `Hugging Face · ${item.paper.authors[0].name}` : "Hugging Face Papers",
+        published: item.paper.publishedAt ?? new Date().toISOString(),
+        kind: "paper",
+      }))
+    : [];
+
+  return [...news, ...papers].sort((a, b) => +new Date(b.published) - +new Date(a.published));
+}
+
+function AIPulse() {
+  const [items, setItems] = useState<PulseItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const refresh = async () => {
+    setLoading(true);
+    try {
+      setItems(await fetchPulse());
+      setLastUpdated(new Date());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void refresh();
+    const interval = window.setInterval(() => void refresh(), 24 * 60 * 60 * 1000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return (
+    <section className="mt-24">
+      <Reveal>
+        <div className="rounded-2xl border border-line bg-panel p-8 md:p-10 shadow-[var(--shadow-sm)]">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <Kicker>AI pulse</Kicker>
+              <p className="mt-2 text-[13.5px] text-muted">Fresh headlines and newly surfaced papers from the AI world.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void refresh()}
+              disabled={loading}
+              className="inline-flex items-center gap-2 rounded-full border border-line bg-panel2 px-3.5 py-2 text-[12px] font-semibold text-muted hover:text-ink hover:border-faint transition-colors disabled:opacity-50"
+              aria-label="Refresh AI news"
+            >
+              <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+              Refresh
+            </button>
+          </div>
+          <div className="mt-8 grid md:grid-cols-2 gap-x-10 divide-y md:divide-y-0 md:divide-x divide-linesoft">
+            {loading && !items.length ? (
+              <p className="md:col-span-2 text-[13.5px] text-muted py-4">Checking the latest AI signals...</p>
+            ) : items.length ? (
+              items.map((item) => (
+                <a
+                  key={`${item.kind}-${item.url}`}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex gap-3 py-4 first:pt-0 md:[&:nth-child(2)]:pt-0 md:[&:nth-child(odd)]:pr-8"
+                >
+                  <span className="flex-none mt-0.5 text-accent">{item.kind === "paper" ? <FileText size={15} /> : <Newspaper size={15} />}</span>
+                  <span className="min-w-0">
+                    <span className="block text-[14px] leading-snug font-medium text-ink group-hover:text-accent transition-colors">{item.title}</span>
+                    <span className="mt-2 flex items-center gap-2 font-mono2 text-[10px] uppercase tracking-[0.1em] text-faint">
+                      {item.kind === "paper" ? "Paper" : "News"} · {formatPulseDate(item.published)} · {item.source}
+                      <ExternalLink size={11} />
+                    </span>
+                  </span>
+                </a>
+              ))
+            ) : (
+              <p className="md:col-span-2 text-[13.5px] text-muted py-4">The live feeds are unavailable right now. Try refreshing in a moment.</p>
+            )}
+          </div>
+          {lastUpdated && <div className="mt-5 text-right font-mono2 text-[10px] uppercase tracking-[0.1em] text-faint">Updated {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>}
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+const VAULT_PREFIX = "/src/content/vault/";
+
+interface Territory {
+  id: string;
+  label: string;
+  count: number;
+  subs: string[];
+  tags: string[];
+}
 
 export default function Home() {
-  const { categories } = vault;
   const fileSystemGraph = useMemo(() => buildFileSystemGraph(), []);
-  const territoryCount = fileSystemGraph.nodes.filter(
-    (node) => node.type === "folder" && node.parentId === "root"
-  ).length;
-  const papers = vault.notes.filter((n) => n.meta.type === "paper");
 
-  const citeCount = (slug: string) =>
-    vault.notes.filter((n) => n.slug !== slug && n.meta.concepts.includes(slug)).length;
-
+  // Top-level vault territories (folders directly under the root) with the
+  // notes inside them — derived from the filesystem graph so the cards always
+  // match the "N territories" heading and the graph view.
+  const territories = useMemo<Territory[]>(
+    () =>
+      fileSystemGraph.nodes
+        .filter((n) => n.type === "folder" && n.parentId === "root")
+        .map((folder) => {
+          const rel = folder.path.startsWith(VAULT_PREFIX)
+            ? folder.path.slice(VAULT_PREFIX.length)
+            : folder.path;
+          const notes = vault.notes.filter((n) => n.path.startsWith(`${rel}/`));
+          return {
+            id: folder.id,
+            label: folder.label,
+            count: notes.length,
+            subs: [...new Set(notes.map((n) => n.subpath.join(" / ")))].filter(Boolean),
+            tags: [...new Set(notes.flatMap((n) => n.meta.tags))].slice(0, 3),
+          };
+        })
+        .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
+    [fileSystemGraph]
+  );
   return (
     <div className="max-w-6xl mx-auto px-5">
       {/* ————— hero ————— */}
@@ -142,13 +291,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ————— explore categories ————— */}
+      {/* ————— explore territories ————— */}
       <section className="mt-24">
         <Reveal className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <Kicker>Explore</Kicker>
             <h2 className="mt-4 font-display font-bold tracking-tight text-[clamp(1.7rem,3.5vw,2.4rem)]">
-              {territoryCount} {territoryCount === 1 ? "territory" : "territories"}, one graph
+              {territories.length} {territories.length === 1 ? "territory" : "territories"}, one graph
             </h2>
           </div>
           <Link to="/knowledge" className="group inline-flex items-center gap-2 text-[13.5px] font-semibold text-muted hover:text-accent transition-colors pb-1">
@@ -156,10 +305,10 @@ export default function Home() {
           </Link>
         </Reveal>
         <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((c, i) => (
-            <Reveal key={c.id} delay={(i % 3) * 80}>
+          {territories.map((t, i) => (
+            <Reveal key={t.id} delay={(i % 3) * 80}>
               <Link
-                to={`/category/${c.id}`}
+                to={`/graph?focus=${encodeURIComponent(t.id)}`}
                 className="lift group block h-full rounded-2xl border border-line bg-panel p-6 hover:border-accent/40"
               >
                 <div className="flex items-start justify-between">
@@ -167,23 +316,14 @@ export default function Home() {
                   <ArrowUpRight size={16} className="text-faint group-hover:text-accent group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" />
                 </div>
                 <div className="mt-6 font-display font-bold text-[1.3rem] tracking-tight group-hover:text-accent transition-colors">
-                  {c.label}
+                  {t.label}
                 </div>
                 <div className="mt-1.5 text-[12.5px] text-muted">
-                  {c.count} notes{c.subs.length > 0 && c.subs[0]
-                    ? ` · ${c.subs.map((s) => s.label).join(", ")}`
-                    : ""}
+                  {t.count} note{t.count === 1 ? "" : "s"}
+                  {t.subs.length > 0 ? ` · ${t.subs.join(", ")}` : ""}
                 </div>
                 <div className="mt-4 pt-4 border-t border-linesoft">
-                  <TagList
-                    tags={[
-                      ...new Set(
-                        vault.notes
-                          .filter((n) => n.category === c.id)
-                          .flatMap((n) => n.meta.tags)
-                      ),
-                    ].slice(0, 3)}
-                  />
+                  <TagList tags={t.tags} />
                 </div>
               </Link>
             </Reveal>
@@ -191,87 +331,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ————— papers ————— */}
-      <section className="mt-24">
-        <Reveal className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <Kicker>Paper trail</Kicker>
-            <h2 className="mt-4 font-display font-bold tracking-tight text-[clamp(1.7rem,3.5vw,2.4rem)]">
-              Ideas worth their citations
-            </h2>
-          </div>
-          <Link to="/knowledge?type=paper" className="group inline-flex items-center gap-2 text-[13.5px] font-semibold text-muted hover:text-accent transition-colors pb-1">
-            All papers <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </Reveal>
-        <div className="mt-8 grid md:grid-cols-2 xl:grid-cols-5 gap-4">
-          {papers.slice(0, 5).map((p, i) => (
-            <Reveal key={p.slug} delay={i * 70}>
-              <Link
-                to={`/note/${p.slug}`}
-                className="lift group flex h-full flex-col rounded-2xl border border-line bg-panel p-6 hover:border-gold/50"
-              >
-                <div className="font-serif2 font-semibold text-[2.4rem] leading-none" style={{ color: TYPE_COLOR.paper }}>
-                  {p.meta.year}
-                </div>
-                <div className="mt-5 font-display font-semibold text-[15.5px] leading-snug tracking-tight group-hover:text-accent transition-colors">
-                  {p.meta.title}
-                </div>
-                <div className="mt-2 text-[12px] text-faint leading-relaxed">
-                  {p.meta.authors?.slice(0, 3).join(", ")}
-                  {(p.meta.authors?.length ?? 0) > 3 ? " et al." : ""}
-                </div>
-                <div className="mt-auto pt-5 text-[11.5px] font-medium text-muted">
-                  introduces {p.meta.concepts.length} concept{p.meta.concepts.length === 1 ? "" : "s"} · cited by{" "}
-                  {citeCount(p.slug)} note{citeCount(p.slug) === 1 ? "" : "s"}
-                </div>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ————— how it works ————— */}
-      <section className="mt-24">
-        <Reveal>
-          <div className="rounded-2xl border border-line bg-panel p-8 md:p-10 shadow-[var(--shadow-sm)]">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <Kicker>Content pipeline</Kicker>
-              <code className="font-mono2 text-[12px] text-muted bg-panel2 border border-linesoft rounded-md px-3 py-1.5">
-                src/content/vault/**/*.md
-              </code>
-            </div>
-            <div className="mt-8 grid md:grid-cols-3 gap-8">
-              {[
-                { n: "01", t: "Write Markdown", d: "Drop a .md file anywhere in the vault. Frontmatter is optional metadata — the body is the truth." },
-                { n: "02", t: "Build discovers it", d: "Recursive discovery parses frontmatter, wikilinks, headings and math into a typed index." },
-                { n: "03", t: "The graph updates", d: "Routes, search, categories, relationships and statistics regenerate automatically." },
-              ].map((s, i) => (
-                <div key={s.n} className="relative">
-                  {i < 2 && (
-                    <div className="hidden md:block absolute top-5 left-[calc(100%-1.25rem)] w-[calc(100%-3.5rem)] h-px bg-line" aria-hidden>
-                      <ArrowRight size={12} className="absolute -right-1 -top-[5.5px] text-faint" />
-                    </div>
-                  )}
-                  <div className="w-10 h-10 rounded-full border border-line bg-panel2 flex items-center justify-center font-mono2 text-[12px] text-accent">
-                    {s.n}
-                  </div>
-                  <div className="mt-4 font-display font-semibold text-[16.5px] tracking-tight">{s.t}</div>
-                  <p className="mt-2 text-[13.5px] text-muted leading-relaxed">{s.d}</p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-9 pt-7 border-t border-linesoft flex flex-wrap items-center gap-4">
-              <Search size={15} className="text-faint" />
-              <span className="text-[13.5px] text-muted">
-                Looking for something specific? Search every note, tag, paper and concept instantly —
-              </span>
-              <kbd className="kbd">⌘</kbd>
-              <kbd className="kbd">K</kbd>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <AIPulse />
     </div>
   );
 }

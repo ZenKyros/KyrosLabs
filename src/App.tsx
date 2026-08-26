@@ -15,6 +15,8 @@ import Explorer from "./pages/Explorer";
 import GraphPage from "./pages/GraphPage";
 import NotePage from "./pages/NotePage";
 import CategoryPage from "./pages/CategoryPage";
+import Research from "./pages/Research";
+import Roadmap from "./pages/Roadmap";
 import About from "./pages/About";
 
 function NotFound() {
@@ -47,6 +49,8 @@ export default function App() {
           <Route path="graph" element={<GraphPage />} />
           <Route path="note/:slug" element={<NotePage />} />
           <Route path="category/*" element={<CategoryPage />} />
+          <Route path="research" element={<Research />} />
+          <Route path="roadmap" element={<Roadmap />} />
           <Route path="about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Route>

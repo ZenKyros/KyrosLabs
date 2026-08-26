@@ -29,14 +29,25 @@ export default function GraphPage() {
     return buildFileSystemGraph();
   }, []);
 
+  // Resolve the focus param to a filesystem-graph node id. The param may be a
+  // vault note slug (e.g. from /note pages: /graph?focus=python) or a raw node id.
+  const focusNodeId = useMemo(() => {
+    if (!focus) return null;
+    if (fsGraph.nodes.some((n) => n.id === focus)) return focus;
+    const bySlug = fsGraph.nodes.find(
+      (n) => n.type === "note" && n.metadata?.slug === focus
+    );
+    return bySlug?.id ?? null;
+  }, [focus, fsGraph]);
+
   // Filter filesystem graph if focus is set
   const filteredFsGraph: FileSystemGraphData = useMemo(() => {
     if (!useFileSystemGraph) return fsGraph;
-    if (focus) {
-      return getFileSystemNeighborhood(fsGraph, focus, depth);
+    if (focusNodeId) {
+      return getFileSystemNeighborhood(fsGraph, focusNodeId, depth);
     }
     return fsGraph;
-  }, [fsGraph, focus, depth, useFileSystemGraph]);
+  }, [fsGraph, focusNodeId, depth, useFileSystemGraph]);
 
   // Legacy graph for backward compatibility
   const legacyData: GraphData = useMemo(() => {
@@ -53,7 +64,7 @@ export default function GraphPage() {
     return buildGraph(notes);
   }, [focus, depth, typeFilter, useFileSystemGraph]);
 
-  const focusNode = focus ? fsGraph.nodes.find(n => n.id === focus) : undefined;
+  const focusNode = focusNodeId ? fsGraph.nodes.find((n) => n.id === focusNodeId) : undefined;
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -178,7 +189,7 @@ export default function GraphPage() {
       )}
 
       <Reveal className="mt-6">
-        <FileSystemGraph data={filteredFsGraph} focus={focus} height={560} />
+        <FileSystemGraph data={filteredFsGraph} focus={focusNodeId} height={560} />
       </Reveal>
 
       <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1.5 font-mono2 text-[10px] tracking-[0.14em] uppercase text-faint">
@@ -210,9 +221,9 @@ export default function GraphPage() {
             )}
           </div>
           <div className="flex flex-col gap-3">
-            {focusNode.type === "note" && (
+            {focusNode.type === "note" && typeof focusNode.metadata?.slug === "string" && (
               <Link
-                to={`/note/${focusNode.path.replace("/src/content/vault/", "").replace(".md", "")}`}
+                to={`/note/${focusNode.metadata.slug}`}
                 className="group inline-flex items-center gap-2 font-mono2 text-[11px] tracking-[0.16em] uppercase text-accent hover:brightness-125 transition-all w-fit"
               >
                 Open full note

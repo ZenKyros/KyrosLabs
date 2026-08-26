@@ -77,13 +77,16 @@ export default function SearchPalette({ open, onClose }: { open: boolean; onClos
           <div className="absolute inset-0 bg-bg2/70 backdrop-blur-[5px]" onMouseDown={onClose} />
           <motion.div
             className="relative w-full max-w-2xl bg-panel border border-line rounded-lg shadow-[var(--shadow)] overflow-hidden"
-            initial={{ y: 14, scale: 0.985, opacity: 0 }}
-            animate={{ y: 0, scale: 1, opacity: 1 }}
-            exit={{ y: 10, scale: 0.99, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.2, 0.7, 0.2, 1] }}
+            // no scale animation — scaling the panel composites it onto its own
+            // GPU layer, which renders the 1px border blurry/"offset".
+            // Fading + sliding only keeps the border pixel-crisp.
+            initial={{ y: 12, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 8, opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.2, 0.7, 0.2, 1] }}
           >
-            <div className="flex items-center gap-3 px-5 border-b border-line">
-              <Search size={16} className="text-faint flex-none" />
+              <div className="flex items-center gap-3 px-5 border-b border-line shrink-0">
+                <Search size={16} className="text-faint flex-none" />
               <input
                 ref={inputRef}
                 value={query}
@@ -102,10 +105,10 @@ export default function SearchPalette({ open, onClose }: { open: boolean; onClos
                   }
                 }}
                 placeholder={`Search ${vault.stats.totalNotes} notes, papers, projects…`}
-                className="w-full bg-transparent py-5 outline-none text-[15px] placeholder:text-faint"
+                className="w-full min-w-0 bg-transparent py-5 outline-none border-0 text-[15px] placeholder:text-faint"
                 aria-label="Search the vault"
               />
-              <kbd className="kbd hidden sm:block">esc</kbd>
+              <kbd className="kbd hidden sm:block flex-none">esc</kbd>
             </div>
 
             <div ref={listRef} className="max-h-[46vh] overflow-y-auto py-2">

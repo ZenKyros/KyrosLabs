@@ -48,6 +48,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   papers: "Papers",
   projects: "Projects",
   research: "Research",
+  // display-only fix for the vault folder's spelling
+  "artificial intillegence": "Artificial Intelligence",
 };
 
 export function categoryLabel(id: string): string {
@@ -117,6 +119,8 @@ function parseNote(filePath: string, raw: string): VaultNote | null {
   const segments = noExt.split("/");
   const fileBase = segments[segments.length - 1];
   if (/^readme$/i.test(fileBase)) return null;
+  // skip stray files with no basename (e.g. ".md") — they would index as a ghost note with an empty slug
+  if (!fileBase.trim()) return null;
   const slug = normalizeSlug(fileBase);
   const category = segments.length > 1 ? segments[0] : "notes";
   const subpath = segments.slice(1, -1);

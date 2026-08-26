@@ -15,5 +15,4 @@ tags:
 ---
 
 #### Q .What is Linear Algebra and why it is used in Artifical Intillegence ?
-        ```text 
-            Thi
+        

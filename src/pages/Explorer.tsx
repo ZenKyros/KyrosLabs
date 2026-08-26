@@ -4,8 +4,9 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ArrowUpDown } from "lucide-react";
-import { vault, categoryLabel } from "../engine/vault";
+import { ArrowUpDown, Folder } from "lucide-react";
+import { vault } from "../engine/vault";
+import { buildFileSystemGraph } from "../engine/filesystem-graph";
 import { Kicker, NoteRow, Reveal, TYPE_COLOR, TYPE_LABEL } from "../components/ui";
 import type { NoteType } from "../engine/types";
 
@@ -19,18 +20,111 @@ const TYPE_FILTERS: { id: NoteType | "all"; label: string }[] = [
 
 const LEVELS = ["foundations", "beginner", "intermediate", "advanced"] as const;
 
+/* ————— folder tree (folders inside folders) for the filter rail ————— */
+
+interface FolderTreeNode {
+  id: string;
+  /** path relative to the vault, e.g. "ArtificiaL Intillegence/Deep Learning" */
+  rel: string;
+  label: string;
+  depth: number;
+  /** notes under this folder, including nested ones */
+  count: number;
+  children: FolderTreeNode[];
+}
+
+function FolderBranch({
+  node,
+  selected,
+  onSelect,
+}: {
+  node: FolderTreeNode;
+  selected: string;
+  onSelect: (rel: string) => void;
+}) {
+  const active = selected === node.rel;
+  const inTrail = selected.startsWith(`${node.rel}/`);
+  return (
+    <div>
+      <button
+        onClick={() => onSelect(active ? "all" : node.rel)}
+        style={{ paddingLeft: `${10 + node.depth * 16}px` }}
+        className={`flex w-full items-center gap-2 pr-2.5 py-1.5 rounded text-left text-[13px] transition-colors cursor-pointer ${
+          active
+            ? "text-accent bg-accentsoft"
+            : inTrail
+            ? "text-ink hover:bg-panel"
+            : "text-muted hover:text-ink hover:bg-panel"
+        }`}
+      >
+        <Folder size={12} className="flex-none text-faint" />
+        <span className="min-w-0 flex-1 truncate">{node.label}</span>
+        <span className="font-mono2 text-[10.5px] text-faint tabular-nums">{node.count}</span>
+      </button>
+      {node.children.map((c) => (
+        <FolderBranch key={c.id} node={c} selected={selected} onSelect={onSelect} />
+      ))}
+    </div>
+  );
+}
+
 export default function Explorer() {
   const [params, setParams] = useSearchParams();
   const [type, setType] = useState<NoteType | "all">((params.get("type") as NoteType) ?? "all");
-  const [category, setCategory] = useState(params.get("cat") ?? "all");
+  // holds a folder path relative to the vault ("all" = no folder filter);
+  // selecting a folder includes every note inside it, at any nesting depth
+  const [folder, setFolder] = useState(params.get("cat") ?? "all");
   const [level, setLevel] = useState(params.get("level") ?? "all");
   const [tag, setTag] = useState(params.get("tag") ?? "all");
   const [sort, setSort] = useState<"title" | "updated">("updated");
 
+  const fileSystemGraph = useMemo(() => buildFileSystemGraph(), []);
+
+  const folderTree = useMemo<FolderTreeNode[]>(() => {
+    const VAULT_PREFIX = "/src/content/vault/";
+    const folders = fileSystemGraph.nodes.filter((n) => n.type === "folder");
+    const byParent = new Map<string, typeof folders>();
+    for (const f of folders) {
+      const key = f.parentId ?? "root";
+      const list = byParent.get(key) ?? [];
+      list.push(f);
+      byParent.set(key, list);
+    }
+    const countNotes = (rel: string) =>
+      vault.notes.filter((n) => n.path.startsWith(`${rel}/`)).length;
+    const build = (parentId: string, depth: number): FolderTreeNode[] =>
+      (byParent.get(parentId) ?? [])
+        .map((f) => {
+          const rel = f.path.startsWith(VAULT_PREFIX) ? f.path.slice(VAULT_PREFIX.length) : f.path;
+          return {
+            id: f.id,
+            rel,
+            label: f.label,
+            depth,
+            count: countNotes(rel),
+            children: build(f.id, depth + 1),
+          };
+        })
+        .sort((a, b) => a.label.localeCompare(b.label));
+    return build("root", 0);
+  }, [fileSystemGraph]);
+
+  const folderLabels = useMemo(() => {
+    const m = new Map<string, string>();
+    const walk = (nodes: FolderTreeNode[]) => {
+      for (const n of nodes) {
+        m.set(n.rel, n.label);
+        walk(n.children);
+      }
+    };
+    walk(folderTree);
+    return m;
+  }, [folderTree]);
+
   const results = useMemo(() => {
     let list = vault.notes.filter((n) => {
       if (type !== "all" && n.meta.type !== type) return false;
-      if (category !== "all" && n.category !== category) return false;
+      if (folder !== "all" && !n.path.startsWith(`${folder}/`)) return false;
       if (level !== "all" && n.meta.level !== level) return false;
       if (tag !== "all" && !n.meta.tags.includes(tag)) return false;
       return true;
@@ -41,7 +135,7 @@ export default function Explorer() {
         : (b.meta.updated ?? "").localeCompare(a.meta.updated ?? "") || a.meta.title.localeCompare(b.meta.title)
     );
     return list;
-  }, [type, category, level, tag, sort]);
+  }, [type, folder, level, tag, sort]);
 
   const setTagBoth = (t: string) => {
     setTag(t);
@@ -62,9 +156,9 @@ export default function Explorer() {
       <Kicker index="§">Knowledge explorer</Kicker>
       <div className="mt-5 flex flex-wrap items-end justify-between gap-6">
         <h1 className="font-display font-bold tracking-[-0.025em] text-[clamp(2.4rem,5vw,3.6rem)] leading-[1.05]">
-          Every note,
+          Explore AI
           <br />
-          <span className="text-accent">one index.</span>
+          <span className="text-accent">One Palace</span>
         </h1>
         <p className="text-[13.5px] text-muted max-w-xs leading-relaxed pb-1">
           {vault.stats.totalNotes} documents discovered recursively from{" "}
@@ -93,20 +187,21 @@ export default function Explorer() {
           </div>
 
           <div>
-            <div className="kicker mb-3.5">Category</div>
-            <div className="flex flex-col items-stretch gap-1">
-              <button onClick={() => setCategory("all")} className={`text-left px-2.5 py-1.5 rounded text-[13px] transition-colors cursor-pointer ${category === "all" ? "text-accent bg-accentsoft" : "text-muted hover:text-ink hover:bg-panel"}`}>
-                All categories
+            <div className="kicker mb-3.5">Folders</div>
+            <div className="flex flex-col items-stretch gap-0.5">
+              <button
+                onClick={() => setFolder("all")}
+                className={`flex items-center gap-2 text-left px-2.5 py-1.5 rounded text-[13px] transition-colors cursor-pointer ${
+                  folder === "all" ? "text-accent bg-accentsoft" : "text-muted hover:text-ink hover:bg-panel"
+                }`}
+              >
+                All folders
+                <span className="ml-auto font-mono2 text-[10.5px] text-faint tabular-nums">
+                  {vault.stats.totalNotes}
+                </span>
               </button>
-              {vault.categories.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setCategory(category === c.id ? "all" : c.id)}
-                  className={`flex justify-between gap-3 text-left px-2.5 py-1.5 rounded text-[13px] transition-colors cursor-pointer ${category === c.id ? "text-accent bg-accentsoft" : "text-muted hover:text-ink hover:bg-panel"}`}
-                >
-                  {c.label}
-                  <span className="font-mono2 text-[10.5px] text-faint tabular-nums">{c.count}</span>
-                </button>
+              {folderTree.map((node) => (
+                <FolderBranch key={node.id} node={node} selected={folder} onSelect={setFolder} />
               ))}
             </div>
           </div>
@@ -152,7 +247,7 @@ export default function Explorer() {
             <span className="font-mono2 text-[11px] tracking-[0.16em] uppercase text-muted">
               Showing <span className="text-accent">{results.length}</span> / {vault.stats.totalNotes}
               {tag !== "all" && <span> · #{tag}</span>}
-              {category !== "all" && <span> · {categoryLabel(category)}</span>}
+              {folder !== "all" && <span> · {folderLabels.get(folder) ?? folder}</span>}
             </span>
             <button
               onClick={() => setSort((s) => (s === "title" ? "updated" : "title"))}
