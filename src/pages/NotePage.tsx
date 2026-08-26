@@ -244,7 +244,12 @@ export default function NotePage() {
       <div id="article" className="mt-12 grid lg:grid-cols-[minmax(0,1fr)_220px] gap-12 items-start">
         <Reveal delay={80}>
           <article className="max-w-[72ch]">
-            <MarkdownRenderer body={note.body} />
+            <MarkdownRenderer
+              body={note.body}
+              // note's folder inside the vault — lets the renderer resolve
+              // relative image/SVG paths like ./img.png or ../assets/x.webp
+              basePath={note.path.includes("/") ? note.path.slice(0, note.path.lastIndexOf("/")) : ""}
+            />
           </article>
         </Reveal>
         <aside className="hidden lg:block sticky top-24">

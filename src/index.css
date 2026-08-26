@@ -232,6 +232,20 @@ body {
 .prose-lab .footnotes { font-size: 0.85em; color: var(--muted); border-top: 1px solid var(--line-soft); margin-top: 3em; padding-top: 1.2em; }
 .prose-lab a[data-footnote-ref], .prose-lab a[data-footnote-backref] { font-family: var(--font-mono2); font-size: 0.8em; color: var(--accent); text-decoration: none; }
 
+/* GFM task lists — checkbox rows instead of dash bullets */
+.prose-lab ul.contains-task-list { padding-left: 0.35em; }
+.prose-lab li.task-list-item { list-style: none; }
+.prose-lab li.task-list-item::before { content: none; }
+.prose-lab li.task-list-item > input[type="checkbox"] { margin-right: 0.55em; transform: translateY(1px); }
+.prose-lab input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
+
+/* inline SVG diagrams written directly in markdown */
+.prose-lab svg.md-svg { max-width: 100%; height: auto; }
+
+/* figures emitted by SmartImage (captions, spacing) */
+.prose-lab figure { margin-inline: 0; }
+.prose-lab figcaption { user-select: none; }
+
 /* code blocks */
 .codeblock { border: 1px solid rgba(160, 180, 220, 0.14); border-radius: 12px; background: var(--code-bg); overflow: hidden; margin: 1.4em 0; box-shadow: var(--shadow-sm); }
 .codeblock-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid rgba(160, 180, 220, 0.1); background: rgba(255, 255, 255, 0.02); }
