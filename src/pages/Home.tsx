@@ -5,26 +5,18 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, ArrowRight, Search } from "lucide-react";
-import { vault, categoryLabel } from "../engine/vault";
-import { topConnected } from "../engine/graph";
-import KnowledgeGraph from "../components/KnowledgeGraph";
-import { Kicker, NoteRow, Reveal, TagList, TypeChip, formatDate, useCountUp, useInView, TYPE_COLOR } from "../components/ui";
-
-function Stat({ value, label, start }: { value: number; label: string; start: boolean }) {
-  const n = useCountUp(value, start);
-  return (
-    <div className="px-6 py-1 first:pl-0">
-      <div className="font-display font-bold text-[2.1rem] leading-none tracking-tight tabular-nums">{n}</div>
-      <div className="text-[11px] font-semibold tracking-[0.12em] uppercase text-faint mt-2.5">{label}</div>
-    </div>
-  );
-}
+import { vault } from "../engine/vault";
+import { buildFileSystemGraph } from "../engine/filesystem-graph";
+import FileSystemGraph from "../components/FileSystemGraph";
+import { Kicker, Reveal, TagList, TYPE_COLOR } from "../components/ui";
 
 export default function Home() {
-  const { stats, recent, categories } = vault;
-  const constellation = useMemo(() => topConnected(18), []);
+  const { categories } = vault;
+  const fileSystemGraph = useMemo(() => buildFileSystemGraph(), []);
+  const territoryCount = fileSystemGraph.nodes.filter(
+    (node) => node.type === "folder" && node.parentId === "root"
+  ).length;
   const papers = vault.notes.filter((n) => n.meta.type === "paper");
-  const [statsRef, statsInView] = useInView<HTMLDivElement>(0.4);
 
   const citeCount = (slug: string) =>
     vault.notes.filter((n) => n.slug !== slug && n.meta.concepts.includes(slug)).length;
@@ -32,36 +24,32 @@ export default function Home() {
   return (
     <div className="max-w-6xl mx-auto px-5">
       {/* ————— hero ————— */}
-      <section className="grid lg:grid-cols-[1.15fr_1fr] gap-12 items-center pt-16 lg:pt-24 pb-8">
-        <div>
+      <section className="home-hero grid lg:grid-cols-[1.15fr_1fr] gap-12 items-center pt-16 lg:pt-24 pb-8">
+        <div className="home-hero-copy">
           <Reveal>
-            <h1 className="font-display font-bold tracking-[-0.035em] leading-[1.02] text-[clamp(3rem,7.5vw,5.4rem)]">
-              <Reveal delay={80}>
-                <span className="reveal-mask">
-                  <span>
-                    Keas<span className="text-accent">AI</span>
-                  </span>
-                </span>
-              </Reveal>
-              <br />
-              <Reveal delay={180}>
-                <span className="reveal-mask">
-                  <span>
-                    <em className="keasai-glitter font-sans font-mono2 font-medium text-accent text-[0.65em]">Learn AI with KeasAI Labs</em>
-                  </span>
-                </span>
-              </Reveal>
+            <div className="home-hero-status">
+              <span className="pulse-dot" aria-hidden="true" />
+              <span>Knowledge system online</span>
+            </div>
+          </Reveal>
+          <Reveal>
+            <h1 className="home-hero-title font-display font-bold tracking-[-0.035em] leading-[0.96] text-[clamp(3.5rem,8vw,6.2rem)]">
+              Keas<span className="home-hero-ai text-accent">AI</span>
             </h1>
           </Reveal>
 
-          <Reveal delay={280}>
+          <Reveal delay={140}>
+            <p className="home-hero-tagline font-display font-medium text-accent">Learn AI with KeasAI Labs</p>
+          </Reveal>
+
+          <Reveal delay={220}>
             <p className="mt-7 text-[16px] text-muted leading-relaxed max-w-[54ch]">
               An evolving map of artificial intelligence — concepts, papers, and projects woven into one
               explorable graph.
             </p>
           </Reveal>
 
-          <Reveal delay={360}>
+          <Reveal delay={300}>
             <div className="mt-9 flex flex-wrap items-center gap-3.5">
               <Link
                 to="/knowledge"
@@ -85,48 +73,72 @@ export default function Home() {
         <Reveal delay={200}>
           <div className="rounded-2xl border border-line bg-panel p-2.5 shadow-[var(--shadow)]">
             <div className="flex items-center justify-between px-3 pt-2.5 pb-1">
-              <span className="text-[11px] font-semibold tracking-[0.12em] uppercase text-faint">
-                Most connected notes
+              <span className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.12em] uppercase text-faint">
+                <span className="pulse-dot !w-[5px] !h-[5px]" aria-hidden="true" />
+                Living vault map
               </span>
               <Link to="/graph" className="flex items-center gap-1 text-[12px] font-semibold text-accent hover:brightness-110 transition-all">
                 Open graph <ArrowUpRight size={12} />
               </Link>
             </div>
-            <KnowledgeGraph data={constellation} height={400} className="!border-0 !rounded-xl" dimUnrelated={false} />
+            <FileSystemGraph data={fileSystemGraph} height={400} className="!border-0 !rounded-xl" />
           </div>
         </Reveal>
       </section>
 
       {/* ————— stats band ————— */}
-      <Reveal>
-        <div
-          ref={statsRef as React.RefObject<HTMLDivElement>}
-          className="mt-10 rounded-2xl border border-line bg-panel shadow-[var(--shadow-sm)] flex flex-wrap items-center divide-x divide-linesoft"
-        >
-          <Stat value={stats.totalNotes} label="Notes" start={statsInView} />
-          <Stat value={stats.concepts} label="Concepts" start={statsInView} />
-          <Stat value={stats.papers} label="Papers" start={statsInView} />
-          <Stat value={stats.graphEdges} label="Graph edges" start={statsInView} />
-          <Stat value={stats.words} label="Words written" start={statsInView} />
-        </div>
-      </Reveal>
 
-      {/* ————— continue learning ————— */}
+      {/* ————— learning essentials ————— */}
       <section className="mt-24">
-        <div>
-          <Reveal>
-            <Kicker>Continue learning</Kicker>
-            <h2 className="mt-4 font-display font-bold tracking-tight text-[clamp(1.7rem,3.5vw,2.4rem)]">
-              Recently in the vault
-            </h2>
-          </Reveal>
-          <div className="mt-6">
-            {recent.slice(0, 5).map((n, i) => (
-              <Reveal key={n.slug} delay={i * 60}>
-                <NoteRow note={n} showDate />
-              </Reveal>
-            ))}
-          </div>
+        <Reveal>
+          <Kicker>Learning essentials</Kicker>
+          <h2 className="mt-4 font-display font-bold tracking-tight text-[clamp(1.7rem,3.5vw,2.4rem)]">
+            A clear route through the ideas
+          </h2>
+          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted">
+            Build durable understanding by moving from first principles to working systems, one connected idea at a time.
+          </p>
+        </Reveal>
+        <div className="mt-8 grid md:grid-cols-3 gap-4">
+          {[
+            {
+              number: "01",
+              title: "Start with foundations",
+              text: "Strengthen the mathematics, Python, and problem-solving habits that make advanced AI easier to understand.",
+              to: "/knowledge",
+              action: "Open foundations",
+            },
+            {
+              number: "02",
+              title: "Connect the core ideas",
+              text: "Follow how models, papers, and techniques build on one another instead of studying each topic in isolation.",
+              to: "/graph",
+              action: "Explore connections",
+            },
+            {
+              number: "03",
+              title: "Learn by building",
+              text: "Turn each concept into an experiment or project, then record what worked, what failed, and what changed.",
+              to: "/research",
+              action: "See research work",
+            },
+          ].map((item, i) => (
+            <Reveal key={item.number} delay={i * 80}>
+              <Link
+                to={item.to}
+                className="lift group block h-full rounded-2xl border border-line bg-panel p-6 hover:border-accent/40"
+              >
+                <div className="font-mono2 text-[11px] tracking-[0.12em] text-accent">{item.number}</div>
+                <h3 className="mt-7 font-display font-semibold text-[18px] tracking-tight group-hover:text-accent transition-colors">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-[13.5px] leading-relaxed text-muted">{item.text}</p>
+                <div className="mt-6 inline-flex items-center gap-2 text-[12px] font-semibold text-accent">
+                  {item.action} <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+            </Reveal>
+          ))}
         </div>
       </section>
 
@@ -136,7 +148,7 @@ export default function Home() {
           <div>
             <Kicker>Explore</Kicker>
             <h2 className="mt-4 font-display font-bold tracking-tight text-[clamp(1.7rem,3.5vw,2.4rem)]">
-              Seven territories, one graph
+              {territoryCount} {territoryCount === 1 ? "territory" : "territories"}, one graph
             </h2>
           </div>
           <Link to="/knowledge" className="group inline-flex items-center gap-2 text-[13.5px] font-semibold text-muted hover:text-accent transition-colors pb-1">
@@ -230,40 +242,25 @@ export default function Home() {
               </code>
             </div>
             <div className="mt-8 grid md:grid-cols-3 gap-8">
-  {[
-    {
-      n: "01",
-      t: "Learn",
-      d: "Explore new ideas, concepts, and technologies through study, experiments, and hands-on work.",
-    },
-    {
-      n: "02",
-      t: "Document",
-      d: "Regularly turn what you learn, build, and discover into structured notes and topics.",
-    },
-    {
-      n: "03",
-      t: "Connect",
-      d: "KeasAI organizes everything into a growing, connected knowledge graph that evolves with me.",
-    },
-  ].map((s, i) => (
-    <div key={s.n} className="relative">
-  
-
-      <div className="w-10 h-10 rounded-full border border-line bg-panel2 flex items-center justify-center font-mono2 text-[12px] text-accent">
-        {s.n}
-      </div>
-
-      <div className="mt-4 font-display font-semibold text-[16.5px] tracking-tight">
-        {s.t}
-      </div>
-
-      <p className="mt-2 text-[13.5px] text-muted leading-relaxed">
-        {s.d}
-      </p>
-    </div>
-  ))}
-</div>
+              {[
+                { n: "01", t: "Write Markdown", d: "Drop a .md file anywhere in the vault. Frontmatter is optional metadata — the body is the truth." },
+                { n: "02", t: "Build discovers it", d: "Recursive discovery parses frontmatter, wikilinks, headings and math into a typed index." },
+                { n: "03", t: "The graph updates", d: "Routes, search, categories, relationships and statistics regenerate automatically." },
+              ].map((s, i) => (
+                <div key={s.n} className="relative">
+                  {i < 2 && (
+                    <div className="hidden md:block absolute top-5 left-[calc(100%-1.25rem)] w-[calc(100%-3.5rem)] h-px bg-line" aria-hidden>
+                      <ArrowRight size={12} className="absolute -right-1 -top-[5.5px] text-faint" />
+                    </div>
+                  )}
+                  <div className="w-10 h-10 rounded-full border border-line bg-panel2 flex items-center justify-center font-mono2 text-[12px] text-accent">
+                    {s.n}
+                  </div>
+                  <div className="mt-4 font-display font-semibold text-[16.5px] tracking-tight">{s.t}</div>
+                  <p className="mt-2 text-[13.5px] text-muted leading-relaxed">{s.d}</p>
+                </div>
+              ))}
+            </div>
             <div className="mt-9 pt-7 border-t border-linesoft flex flex-wrap items-center gap-4">
               <Search size={15} className="text-faint" />
               <span className="text-[13.5px] text-muted">

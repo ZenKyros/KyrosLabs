@@ -22,7 +22,7 @@ out/
 .idea/
 *.swp
 *.swo
-
+.obsidian/
 # Python
 __pycache__/
 *.pyc

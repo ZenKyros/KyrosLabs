@@ -1,76 +1,59 @@
 /**
- * KnowledgeGraph — a custom force-directed constellation of the vault.
- * SVG + hand-rolled physics: pan, zoom, drag, hover-neighborhood,
- * focus mode, type legend, reduced-motion static layout.
+ * FileSystemGraph — a force-directed graph visualization for the filesystem-based knowledge graph.
+ * Shows root, folders, and notes with structural and link edges.
  */
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Minus, Plus, Maximize2 } from "lucide-react";
-import type { GraphData } from "../engine/graph";
-import type { NoteType, EdgeKind } from "../engine/types";
-import { TYPE_COLOR, TYPE_LABEL } from "./ui";
-import { categoryLabel } from "../engine/vault";
+import type { FileSystemGraphData, FileSystemGraphNode, FileSystemGraphEdge } from "../engine/types";
 
 interface SimNode {
-  slug: string;
+  id: string;
+  label: string;
+  type: "root" | "folder" | "note";
   x: number;
   y: number;
   vx: number;
   vy: number;
   fx: number | null;
   fy: number | null;
-  degree: number;
-  type: NoteType;
-  category: string;
-  title: string;
   r: number;
+  parentId?: string;
 }
 
-const EDGE_STYLE: Record<EdgeKind, { stroke: string; dash?: string; width: number; opacity: number }> = {
-  prerequisite: { stroke: "var(--accent)", width: 1.3, opacity: 0.55 },
-  related: { stroke: "var(--muted)", width: 1, opacity: 0.28 },
-  "explained-by": { stroke: "var(--gold)", width: 1, opacity: 0.4, dash: "3 3" },
-  "paper-introduces": { stroke: "var(--gold)", width: 1.1, opacity: 0.5 },
-  implements: { stroke: "var(--cobalt)", width: 1.2, opacity: 0.5 },
-  uses: { stroke: "var(--cobalt)", width: 1, opacity: 0.35, dash: "4 3" },
-  references: { stroke: "var(--muted)", width: 1, opacity: 0.16, dash: "2 4" },
-  "part-of": { stroke: "var(--muted)", width: 1, opacity: 0.2 },
-  follows: { stroke: "var(--accent)", width: 1, opacity: 0.4 },
-  structure: { stroke: "var(--muted)", width: 1, opacity: 0.2 },
-  link: { stroke: "var(--muted)", width: 1, opacity: 0.28 },
+const NODE_COLORS = {
+  root: "var(--accent)",
+  folder: "#3b82f6",
+  note: "#22c55e",
 };
 
-const REST: Partial<Record<EdgeKind, number>> = {
-  prerequisite: 84,
-  related: 128,
-  "paper-introduces": 108,
-  "explained-by": 108,
-  implements: 118,
-  uses: 128,
-  references: 150,
+const NODE_RADIUS = {
+  root: 14,
+  folder: 9,
+  note: 6,
 };
 
 interface Props {
-  data: GraphData;
+  data: FileSystemGraphData;
   focus?: string | null;
   height?: number;
   className?: string;
-  dimUnrelated?: boolean;
 }
 
-export default function KnowledgeGraph({ data, focus = null, height = 560, className = "", dimUnrelated = true }: Props) {
+export default function FileSystemGraph({ data, focus = null, height = 560, className = "" }: Props) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const nodesRef = useRef<SimNode[]>([]);
   const alphaRef = useRef(1);
   const rafRef = useRef(0);
-  const dragRef = useRef<{ slug: string; moved: number } | { pan: true; sx: number; sy: number; ox: number; oy: number; moved: number } | null>(null);
+  const dragRef = useRef<{ id: string; moved: number } | { pan: true; sx: number; sy: number; ox: number; oy: number; moved: number } | null>(null);
   const [view, setView] = useState({ x: 0, y: 0, k: 1 });
   const viewRef = useRef(view);
   viewRef.current = view;
   const [hover, setHover] = useState<string | null>(null);
+  const [signalPhase, setSignalPhase] = useState(0);
   const [, setFrame] = useState(0);
   const [size, setSize] = useState({ w: 800, h: height });
   const reduced = useMemo(
@@ -78,9 +61,20 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
     []
   );
 
+  useEffect(() => {
+    if (reduced) return;
+    let animationFrame = 0;
+    const animateSignals = (time: number) => {
+      setSignalPhase(time * 0.00028);
+      animationFrame = requestAnimationFrame(animateSignals);
+    };
+    animationFrame = requestAnimationFrame(animateSignals);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [reduced]);
+
   const adjacency = useMemo(() => {
     const m = new Map<string, Set<string>>();
-    for (const n of data.nodes) m.set(n.note.slug, new Set());
+    for (const n of data.nodes) m.set(n.id, new Set());
     for (const e of data.edges) {
       m.get(e.source)?.add(e.target);
       m.get(e.target)?.add(e.source);
@@ -95,39 +89,61 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
     const h = height;
     setSize({ w, h });
 
-    const cats = [...new Set(data.nodes.map((n) => n.note.category))];
-    const clusterCenter = (cat: string) => {
-      const i = cats.indexOf(cat);
-      const angle = (i / Math.max(cats.length, 1)) * Math.PI * 2 - Math.PI / 2;
-      const R = Math.min(w, h) * (cats.length > 1 ? 0.27 : 0);
-      return { x: w / 2 + Math.cos(angle) * R, y: h / 2 + Math.sin(angle) * R };
-    };
+    const prev = new Map(nodesRef.current.map((n) => [n.id, n]));
+    nodesRef.current = data.nodes.map((node) => {
+      const existing = prev.get(node.id);
 
-    const prev = new Map(nodesRef.current.map((n) => [n.slug, n]));
-    nodesRef.current = data.nodes.map((d) => {
-      const existing = prev.get(d.note.slug);
-      const c = clusterCenter(d.note.category);
-      const jitter = () => (Math.random() - 0.5) * Math.min(w, h) * 0.3;
+      // Position based on type and hierarchy
+      let startX: number, startY: number;
+
+      if (node.type === "root") {
+        startX = w / 2;
+        startY = h / 2;
+      } else if (node.type === "folder") {
+        // Position folders around root in a radial pattern
+        const parent = data.nodes.find(n => n.id === node.parentId);
+        if (parent) {
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 120 + Math.random() * 80;
+          startX = w / 2 + Math.cos(angle) * distance;
+          startY = h / 2 + Math.sin(angle) * distance;
+        } else {
+          startX = w / 2 + (Math.random() - 0.5) * 200;
+          startY = h / 2 + (Math.random() - 0.5) * 200;
+        }
+      } else {
+        // Notes near their parent folder
+        const parent = data.nodes.find(n => n.id === node.parentId);
+        if (parent) {
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 60 + Math.random() * 40;
+          startX = w / 2 + Math.cos(angle) * distance;
+          startY = h / 2 + Math.sin(angle) * distance;
+        } else {
+          startX = w / 2 + (Math.random() - 0.5) * 300;
+          startY = h / 2 + (Math.random() - 0.5) * 300;
+        }
+      }
+
       return {
-        slug: d.note.slug,
-        x: existing?.x ?? c.x + jitter(),
-        y: existing?.y ?? c.y + jitter(),
+        id: node.id,
+        label: node.label,
+        type: node.type,
+        x: existing?.x ?? startX,
+        y: existing?.y ?? startY,
         vx: 0,
         vy: 0,
         fx: null,
         fy: null,
-        degree: d.degree,
-        type: d.note.meta.type,
-        category: d.note.category,
-        title: d.note.meta.title,
-        r: 5 + Math.min(d.degree, 12) * 1.15,
+        r: NODE_RADIUS[node.type],
+        parentId: node.parentId,
       };
     });
     alphaRef.current = 1;
 
     const step = () => {
       const nodes = nodesRef.current;
-      const byId = new Map(nodes.map((n) => [n.slug, n]));
+      const byId = new Map(nodes.map((n) => [n.id, n]));
       const alpha = alphaRef.current;
 
       // pairwise repulsion
@@ -153,12 +169,15 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
           b.vy += fy;
         }
       }
-      // springs
+
+      // springs for edges
       for (const e of data.edges) {
         const a = byId.get(e.source);
         const b = byId.get(e.target);
         if (!a || !b) continue;
-        const rest = REST[e.kind] ?? 130;
+
+        // Different rest lengths for different edge types
+        const rest = e.type === "structure" ? 100 : 140;
         const dx = b.x - a.x;
         const dy = b.y - a.y;
         const d = Math.max(1, Math.sqrt(dx * dx + dy * dy));
@@ -170,11 +189,24 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
         b.vx -= fx;
         b.vy -= fy;
       }
-      // gravity to cluster + center
+
+      // gravity to center + parent attraction
       for (const n of nodes) {
-        const c = clusterCenter(n.category);
-        n.vx += (c.x - n.x) * 0.02 * alpha + (w / 2 - n.x) * 0.0035 * alpha;
-        n.vy += (c.y - n.y) * 0.02 * alpha + (h / 2 - n.y) * 0.0035 * alpha;
+        // Weak gravity to center
+        n.vx += (w / 2 - n.x) * 0.003 * alpha;
+        n.vy += (h / 2 - n.y) * 0.003 * alpha;
+
+        // Attraction to parent (for structure)
+        if (n.parentId) {
+          const parent = byId.get(n.parentId);
+          if (parent) {
+            const dx = parent.x - n.x;
+            const dy = parent.y - n.y;
+            n.vx += dx * 0.015 * alpha;
+            n.vy += dy * 0.015 * alpha;
+          }
+        }
+
         if (n.fx !== null && n.fy !== null) {
           n.x = n.fx;
           n.y = n.fy;
@@ -182,10 +214,15 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
           n.vy = 0;
           continue;
         }
-        n.vx *= 0.8;
-        n.vy *= 0.8;
+        n.vx *= 0.85;
+        n.vy *= 0.85;
         n.x += n.vx;
         n.y += n.vy;
+
+        // Keep every node inside the graph viewport as the simulation settles.
+        const padding = Math.max(18, n.r + 8);
+        n.x = Math.min(Math.max(n.x, padding), Math.max(padding, w - padding));
+        n.y = Math.min(Math.max(n.y, padding), Math.max(padding, h - padding));
       }
       alphaRef.current *= 0.99;
     };
@@ -272,11 +309,11 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
     return { x: (clientX - rect.left - v.x) / v.k, y: (clientY - rect.top - v.y) / v.k };
   };
 
-  const onNodeDown = (e: React.PointerEvent, slug: string) => {
+  const onNodeDown = (e: React.PointerEvent, id: string) => {
     e.stopPropagation();
     (e.target as Element).setPointerCapture(e.pointerId);
-    dragRef.current = { slug, moved: 0 };
-    const node = nodesRef.current.find((n) => n.slug === slug);
+    dragRef.current = { id, moved: 0 };
+    const node = nodesRef.current.find((n) => n.id === id);
     if (node) {
       node.fx = node.x;
       node.fy = node.y;
@@ -292,9 +329,9 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
   const onMove = (e: React.PointerEvent) => {
     const d = dragRef.current;
     if (!d) return;
-    if ("slug" in d) {
+    if ("id" in d) {
       const p = toWorld(e.clientX, e.clientY);
-      const node = nodesRef.current.find((n) => n.slug === d.slug);
+      const node = nodesRef.current.find((n) => n.id === d.id);
       if (node) {
         node.fx = p.x;
         node.fy = p.y;
@@ -313,14 +350,19 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
   const onUp = (e: React.PointerEvent) => {
     const d = dragRef.current;
     dragRef.current = null;
-    if (d && "slug" in d) {
-      const node = nodesRef.current.find((n) => n.slug === d.slug);
+    if (d && "id" in d) {
+      const node = nodesRef.current.find((n) => n.id === d.id);
       if (node) {
         node.fx = null;
         node.fy = null;
       }
-      if (d.moved < 6 && !("button" in e && e.button !== 0)) {
-        navigate(`/note/${d.slug}`);
+      if (d.moved < 6 && !(e as any).button) {
+        // Navigate to note if it's a note node
+        const nodeData = data.nodes.find(n => n.id === d.id);
+        if (nodeData && nodeData.type === "note") {
+          const slug = nodeData.path.replace("/src/content/vault/", "").replace(".md", "");
+          navigate(`/note/${slug}`);
+        }
       }
       alphaRef.current = Math.max(alphaRef.current, 0.2);
     }
@@ -329,19 +371,18 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
   const hoveredNeighbors = hover ? adjacency.get(hover) ?? new Set<string>() : null;
 
   const visible = useCallback(
-    (slug: string) => {
-      if (!dimUnrelated) return true;
-      if (focus && adjacency.get(focus)?.has(slug)) return true;
-      if (focus === slug) return true;
-      if (hover && (hover === slug || hoveredNeighbors?.has(slug))) return true;
+    (id: string) => {
+      if (focus && adjacency.get(focus)?.has(id)) return true;
+      if (focus === id) return true;
+      if (hover && (hover === id || hoveredNeighbors?.has(id))) return true;
       if (!focus && !hover) return true;
       return false;
     },
-    [focus, hover, hoveredNeighbors, adjacency, dimUnrelated]
+    [focus, hover, hoveredNeighbors, adjacency]
   );
 
   const nodes = nodesRef.current;
-  const byId = useMemo(() => new Map(nodes.map((n) => [n.slug, n])), [nodes, nodes.length]);
+  const byId = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes, nodes.length]);
   const hoveredNode = hover ? byId.get(hover) : null;
 
   return (
@@ -353,57 +394,96 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
         onPointerMove={onMove}
         onPointerUp={onUp}
         role="img"
-        aria-label="Knowledge graph"
+        aria-label="Filesystem knowledge graph"
       >
+        <defs>
+          <filter id="filesystem-node-glow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="3.5" />
+          </filter>
+        </defs>
         <g transform={`translate(${view.x},${view.y}) scale(${view.k})`}>
+          {/* Edges */}
           {data.edges.map((e, i) => {
             const a = byId.get(e.source);
             const b = byId.get(e.target);
             if (!a || !b) return null;
-            const style = EDGE_STYLE[e.kind] ?? EDGE_STYLE.references;
+
+            const isStructure = e.type === "structure";
             const active =
               hover && (e.source === hover || e.target === hover)
                 ? 1
                 : visible(e.source) && visible(e.target)
                 ? 1
                 : 0.12;
+
             return (
-              <line
-                key={i}
-                x1={a.x}
-                y1={a.y}
-                x2={b.x}
-                y2={b.y}
-                stroke={style.stroke}
-                strokeWidth={(hover && (e.source === hover || e.target === hover) ? style.width + 0.7 : style.width) / Math.max(view.k, 0.7)}
-                strokeDasharray={style.dash}
-                opacity={style.opacity * active}
-              />
+              <g key={i}>
+                <line
+                  x1={a.x}
+                  y1={a.y}
+                  x2={b.x}
+                  y2={b.y}
+                  stroke={isStructure ? "var(--muted)" : "var(--accent)"}
+                  strokeWidth={(hover && (e.source === hover || e.target === hover) ? 1.7 : 1.2) / Math.max(view.k, 0.7)}
+                  strokeDasharray={isStructure ? undefined : "3 3"}
+                  opacity={(isStructure ? 0.25 : 0.5) * active}
+                />
+                {!reduced && active > 0.12 && (
+                  <>
+                    {[0, 1].map((pulse) => (
+                      (() => {
+                        const progress = (signalPhase * (isStructure ? 0.72 : 1) + i * 0.17 + pulse * 0.5) % 1;
+                        return (
+                          <circle
+                            key={pulse}
+                            cx={a.x + (b.x - a.x) * progress}
+                            cy={a.y + (b.y - a.y) * progress}
+                            r={(pulse === 0 ? 2.4 : 1.6) / Math.max(view.k, 0.7)}
+                            fill={isStructure ? "var(--muted)" : "var(--accent)"}
+                            opacity={(isStructure ? 0.65 : 0.95) * active}
+                          />
+                        );
+                      })()
+                    ))}
+                  </>
+                )}
+              </g>
             );
           })}
-          {nodes.map((n) => {
-            const dim = !visible(n.slug);
-            const isFocus = focus === n.slug;
-            const isHover = hover === n.slug;
-            const neighbor = hoveredNeighbors?.has(n.slug);
-            const showLabel = isHover || isFocus || neighbor || n.degree >= 5 || view.k > 1.05;
+
+          {/* Nodes */}
+          {nodes.map((n, index) => {
+            const dim = !visible(n.id);
+            const isFocus = focus === n.id;
+            const isHover = hover === n.id;
+            const neighbor = hoveredNeighbors?.has(n.id);
+            const showLabel = isHover || isFocus || neighbor || n.r >= 10 || view.k > 1.05;
+            const shine = reduced ? 0.35 : (Math.sin(signalPhase * 2.4 + index * 0.8) + 1) / 2;
+
             return (
               <g
-                key={n.slug}
+                key={n.id}
                 className="graph-node"
                 transform={`translate(${n.x},${n.y})`}
                 opacity={dim ? 0.13 : 1}
-                onPointerDown={(e) => onNodeDown(e, n.slug)}
-                onPointerEnter={() => setHover(n.slug)}
-                onPointerLeave={() => setHover((h) => (h === n.slug ? null : h))}
+                onPointerDown={(e) => onNodeDown(e, n.id)}
+                onPointerEnter={() => setHover(n.id)}
+                onPointerLeave={() => setHover((h) => (h === n.id ? null : h))}
               >
+                <circle
+                  r={n.r + 3 + shine * 4}
+                  fill={NODE_COLORS[n.type]}
+                  opacity={(0.12 + shine * 0.2) * (dim ? 0.35 : 1)}
+                  filter="url(#filesystem-node-glow)"
+                  pointerEvents="none"
+                />
                 {(isFocus || isHover) && (
-                  <circle r={n.r + 7} fill="none" stroke={TYPE_COLOR[n.type]} strokeOpacity={0.35} strokeWidth={1} />
+                  <circle r={n.r + 7} fill="none" stroke={NODE_COLORS[n.type]} strokeOpacity={0.35} strokeWidth={1} />
                 )}
                 <circle
                   r={n.r}
-                  fill={TYPE_COLOR[n.type]}
-                  fillOpacity={isFocus || isHover ? 1 : 0.82}
+                  fill={NODE_COLORS[n.type]}
+                  fillOpacity={isFocus || isHover ? 1 : 0.85}
                   stroke="var(--bg)"
                   strokeWidth={1.6 / Math.max(view.k, 0.6)}
                 />
@@ -416,7 +496,7 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
                     fill={isHover || isFocus ? "var(--ink)" : "var(--muted)"}
                     style={{ paintOrder: "stroke", stroke: "var(--bg)", strokeWidth: 3, pointerEvents: "none" }}
                   >
-                    {n.title.length > 26 ? n.title.slice(0, 25) + "…" : n.title}
+                    {n.label.length > 26 ? n.label.slice(0, 25) + "…" : n.label}
                   </text>
                 )}
               </g>
@@ -445,30 +525,34 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
 
       {/* legend */}
       <div className="absolute bottom-3 left-3 flex flex-wrap gap-x-4 gap-y-1 bg-panel/90 border border-line rounded-md px-3 py-2">
-        {(Object.keys(TYPE_LABEL) as NoteType[]).filter((t) => t !== "note" || data.nodes.some((n) => n.note.meta.type === "note")).map((t) => (
-          <span key={t} className="flex items-center gap-1.5 font-mono2 text-[9.5px] tracking-[0.14em] uppercase text-muted">
-            <span className="w-[7px] h-[7px] rounded-full" style={{ background: TYPE_COLOR[t] }} />
-            {TYPE_LABEL[t]}
-          </span>
-        ))}
+        <span className="flex items-center gap-1.5 font-mono2 text-[9.5px] tracking-[0.14em] uppercase text-muted">
+          <span className="w-[7px] h-[7px] rounded-full" style={{ background: NODE_COLORS.root }} />
+          Root
+        </span>
+        <span className="flex items-center gap-1.5 font-mono2 text-[9.5px] tracking-[0.14em] uppercase text-muted">
+          <span className="w-[7px] h-[7px] rounded-full" style={{ background: NODE_COLORS.folder }} />
+          Folder
+        </span>
+        <span className="flex items-center gap-1.5 font-mono2 text-[9.5px] tracking-[0.14em] uppercase text-muted">
+          <span className="w-[7px] h-[7px] rounded-full" style={{ background: NODE_COLORS.note }} />
+          Note
+        </span>
       </div>
 
       {/* hover card */}
       {hoveredNode && (
         <div
-          className="absolute pointer-events-none z-10 bg-panel border border-line rounded-md px-3.5 py-2.5 shadow-[var(--shadow)] max-w-[220px]"
+          className="absolute pointer-events-none bg-panel border border-line rounded-md shadow-[var(--shadow)] px-3 py-2.5 max-w-[240px]"
           style={{
-            left: Math.min(size.w - 230, Math.max(8, view.x + hoveredNode.x * view.k + 14)),
-            top: Math.min(size.h - 90, Math.max(8, view.y + hoveredNode.y * view.k - 20)),
+            left: Math.min(size.w - 250, Math.max(10, (hoveredNode.x * view.k) + view.x + 15)),
+            top: Math.min(size.h - 100, Math.max(10, (hoveredNode.y * view.k) + view.y - 10)),
           }}
         >
-          <div className="font-display font-medium text-[13.5px] leading-tight">{hoveredNode.title}</div>
-          <div className="font-mono2 text-[9.5px] tracking-[0.14em] uppercase mt-1.5" style={{ color: TYPE_COLOR[hoveredNode.type] }}>
-            {TYPE_LABEL[hoveredNode.type]} · {categoryLabel(hoveredNode.category)}
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-[6px] h-[6px] rotate-45" style={{ background: NODE_COLORS[hoveredNode.type] }} />
+            <span className="font-mono2 text-[9.5px] uppercase tracking-[0.14em] text-faint">{hoveredNode.type}</span>
           </div>
-          <div className="font-mono2 text-[9.5px] text-faint mt-1">
-            {hoveredNode.degree} connection{hoveredNode.degree === 1 ? "" : "s"} · click to open
-          </div>
+          <div className="font-display font-medium text-[14.5px] leading-tight">{hoveredNode.label}</div>
         </div>
       )}
     </div>

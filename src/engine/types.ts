@@ -26,7 +26,11 @@ export type EdgeKind =
   | "references"
   | "part-of"
   | "follows"
-  | "uses";
+  | "uses"
+  | "structure"
+  | "link";
+
+export type GraphNodeType = "root" | "folder" | "note";
 
 export interface NoteMeta {
   title: string;
@@ -116,6 +120,26 @@ export interface VaultIndex {
 export interface GraphNodeDatum {
   note: VaultNote;
   degree: number;
+}
+
+export interface FileSystemGraphNode {
+  id: string;
+  label: string;
+  type: GraphNodeType;
+  path: string;
+  parentId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface FileSystemGraphEdge {
+  source: string;
+  target: string;
+  type: "structure" | "link";
+}
+
+export interface FileSystemGraphData {
+  nodes: FileSystemGraphNode[];
+  edges: FileSystemGraphEdge[];
 }
 
 export interface SearchResult {

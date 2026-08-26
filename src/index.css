@@ -279,6 +279,42 @@ body {
   animation: float-text 3s ease-in-out infinite;
 }
 
+.home-hero-copy { position: relative; }
+.home-hero-status {
+  display: inline-flex; align-items: center; gap: 9px; margin-bottom: 22px;
+  color: var(--muted); font-family: var(--font-mono2); font-size: 10px;
+  font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+}
+.home-hero-title {
+  position: relative; display: inline-block; letter-spacing: 0;
+  animation: hero-title-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.home-hero-title::after {
+  content: ""; position: absolute; left: 0; bottom: -14px; width: 68px; height: 3px;
+  border-radius: 999px; background: var(--accent); transform-origin: left;
+  animation: hero-rule-in 1s 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.home-hero-ai {
+  display: inline-block; transform-origin: 70% 70%;
+  animation: hero-ai-glow 3.8s 0.8s ease-in-out infinite;
+}
+.home-hero-tagline {
+  margin-top: 30px; font-size: clamp(1.15rem, 2.2vw, 1.55rem); line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+@keyframes hero-title-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes hero-rule-in {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+@keyframes hero-ai-glow {
+  0%, 100% { transform: translateY(0) scale(1); text-shadow: 0 0 0 transparent; }
+  50% { transform: translateY(-3px) scale(1.025); text-shadow: 0 0 20px color-mix(in srgb, var(--accent) 32%, transparent); }
+}
+
 @keyframes float-text {
   0%,
   100% {
