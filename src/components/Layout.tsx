@@ -89,8 +89,8 @@ export default function Layout() {
               <span className="block font-display font-bold text-[17px] tracking-tight">
                 Keas<span className="text-accent">AI</span>
               </span>
-              <span className="hidden sm:block text-[10.5px] font-medium tracking-[0.08em] uppercase text-faint mt-0.5">
-                Learn AI from Scratch
+              <span className="hidden sm:block text-[10.5px] font-medium tracking-[0.08em] text-faint mt-0.5">
+                Learn & Explore AI 
               </span>
             </span>
           </Link>
