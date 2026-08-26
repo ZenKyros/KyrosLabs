@@ -242,16 +242,14 @@ export default function NotePage() {
 
       {/* ————— article + toc ————— */}
       <div id="article" className="mt-12 grid lg:grid-cols-[minmax(0,1fr)_220px] gap-12 items-start">
-        <Reveal delay={80}>
-          <article className="max-w-[72ch]">
-            <MarkdownRenderer
-              body={note.body}
-              // note's folder inside the vault — lets the renderer resolve
-              // relative image/SVG paths like ./img.png or ../assets/x.webp
-              basePath={note.path.includes("/") ? note.path.slice(0, note.path.lastIndexOf("/")) : ""}
-            />
-          </article>
-        </Reveal>
+        <article className="max-w-[72ch]">
+          <MarkdownRenderer
+            body={note.body}
+            // note's folder inside the vault — lets the renderer resolve
+            // relative image/SVG paths like ./img.png or ../assets/x.webp
+            basePath={note.path.includes("/") ? note.path.slice(0, note.path.lastIndexOf("/")) : ""}
+          />
+        </article>
         <aside className="hidden lg:block sticky top-24">
           <Toc note={note} />
           <div className="mt-10 pt-6 border-t border-linesoft">

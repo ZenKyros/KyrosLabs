@@ -69,7 +69,6 @@ export default function Layout() {
       : path === "/"
       ? "KeasAI · AI Knowledge Lab"
       : `${path.slice(1)[0]?.toUpperCase() ?? ""}${path.slice(2)} · KeasAI`;
-    window.scrollTo(0, 0);
     setMenuOpen(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
@@ -272,7 +271,7 @@ export default function Layout() {
         </div>
         <div className="border-t border-linesoft">
           <div className="max-w-6xl mx-auto px-5 py-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-faint">
-            <span>© 2026 KyrosLabs · AI Knowledge Lab</span>
+            <span>© 2026 KeasAi | Explore & Build AI</span>
             <span className="hidden sm:inline"></span>
             <button
               onClick={() => setSearchOpen(true)}

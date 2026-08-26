@@ -7,6 +7,3 @@ tags:
   - programming 
   - linear-algebra
 ---
-
-
-## This the Vault
