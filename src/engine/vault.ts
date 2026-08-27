@@ -93,13 +93,54 @@ export function slugifyHeading(text: string): string {
     .replace(/\s+/g, "-");
 }
 
+const LATEX_SYMBOLS: Record<string, string> = {
+  alpha: "α",
+  beta: "β",
+  delta: "δ",
+  gamma: "γ",
+  lambda: "λ",
+  mu: "μ",
+  sigma: "σ",
+  theta: "θ",
+  pi: "π",
+  infty: "∞",
+};
+
+const SUBSCRIPT_CHARS: Record<string, string> = {
+  "0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄",
+  "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉",
+  a: "ₐ", e: "ₑ", h: "ₕ", i: "ᵢ", j: "ⱼ", k: "ₖ", l: "ₗ",
+  m: "ₘ", n: "ₙ", o: "ₒ", p: "ₚ", r: "ᵣ", s: "ₛ", t: "ₜ",
+  u: "ᵤ", v: "ᵥ", x: "ₓ",
+};
+
+function formatHeadingText(text: string): string {
+  return text
+    .replace(/\$+([^$]*)\$+/g, (_match, expression: string) =>
+      expression
+        .replace(/\\text\{([^{}]*)\}/g, "$1")
+        .replace(/\\([a-zA-Z]+)/g, (_command, name: string) => LATEX_SYMBOLS[name] ?? name)
+        .replace(/_\{([^{}]+)\}|_([a-zA-Z0-9])/g, (_subscript, grouped?: string, single?: string) =>
+          [...(grouped ?? single ?? "")].map((char) => SUBSCRIPT_CHARS[char] ?? char).join("")
+        )
+    )
+    .replace(/[*_`]/g, "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function extractHeadings(body: string): TocItem[] {
   const clean = stripCode(body);
   const items: TocItem[] = [];
+  const seenIds = new Set<string>();
   for (const line of clean.split("\n")) {
     const m = line.match(/^(#{2,3})\s+(.+?)\s*#*\s*$/);
     if (m) {
-      items.push({ id: slugifyHeading(m[2]), text: m[2].replace(/[*_`]/g, ""), depth: m[1].length === 2 ? 2 : 3 });
+      const id = slugifyHeading(m[2]);
+      if (seenIds.has(id)) continue;
+      seenIds.add(id);
+      items.push({ id, text: formatHeadingText(m[2]), depth: m[1].length === 2 ? 2 : 3 });
     }
   }
   return items;
