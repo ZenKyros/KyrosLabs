@@ -63,6 +63,10 @@ const VALID_STATUS: NoteStatus[] = [
 const VALID_LEVELS: NoteLevel[] = ["foundations", "beginner", "intermediate", "advanced"];
 
 /** Strip fenced code + inline code so wikilinks/heading scans never match code. */
+function stripFencedCode(md: string): string {
+  return md.replace(/```[\s\S]*?```/g, "\n");
+}
+
 function stripCode(md: string): string {
   return md
     .replace(/```[\s\S]*?```/g, "\n")
@@ -131,7 +135,7 @@ function formatHeadingText(text: string): string {
 }
 
 function extractHeadings(body: string): TocItem[] {
-  const clean = stripCode(body);
+  const clean = stripFencedCode(body);
   const items: TocItem[] = [];
   const seenIds = new Set<string>();
   for (const line of clean.split("\n")) {
