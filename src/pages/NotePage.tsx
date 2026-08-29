@@ -250,27 +250,29 @@ export default function NotePage() {
             basePath={note.path.includes("/") ? note.path.slice(0, note.path.lastIndexOf("/")) : ""}
           />
         </article>
-        <aside className="hidden lg:block sticky top-24">
-          <Toc note={note} />
-          <div className="mt-10 pt-6 border-t border-linesoft">
-            <div className="kicker mb-3.5">Explore this concept</div>
-            <Link
-              to={`/graph?focus=${note.slug}`}
-              className="group block border border-line rounded-md p-4 bg-panel hover:border-accent/50 transition-colors"
-            >
-              <Network size={16} className="text-accent" />
-              <span className="block font-mono2 text-[10px] tracking-[0.16em] uppercase text-muted mt-2.5 group-hover:text-ink transition-colors">
-                Open focused graph
-                <ArrowUpRight size={11} className="inline ml-1.5 group-hover:text-accent" />
-              </span>
-            </Link>
-          </div>
-          {note.meta.tags.length > 0 && (
-            <div className="mt-8">
-              <div className="kicker mb-3">Tags</div>
-              <TagList tags={note.meta.tags} />
+        <aside className="hidden lg:block sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto pr-2">
+          <div className="pb-6">
+            <Toc note={note} />
+            <div className="mt-10 pt-6 border-t border-linesoft">
+              <div className="kicker mb-3.5">Explore this concept</div>
+              <Link
+                to={`/graph?focus=${note.slug}`}
+                className="group block border border-line rounded-md p-4 bg-panel hover:border-accent/50 transition-colors"
+              >
+                <Network size={16} className="text-accent" />
+                <span className="block font-mono2 text-[10px] tracking-[0.16em] uppercase text-muted mt-2.5 group-hover:text-ink transition-colors">
+                  Open focused graph
+                  <ArrowUpRight size={11} className="inline ml-1.5 group-hover:text-accent" />
+                </span>
+              </Link>
             </div>
-          )}
+            {note.meta.tags.length > 0 && (
+              <div className="mt-8">
+                <div className="kicker mb-3">Tags</div>
+                <TagList tags={note.meta.tags} />
+              </div>
+            )}
+          </div>
         </aside>
       </div>
 
