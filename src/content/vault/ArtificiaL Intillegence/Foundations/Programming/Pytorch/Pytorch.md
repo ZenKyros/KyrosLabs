@@ -8,7 +8,6 @@ tags:
   - linear algebra
   -  vector
 ---
-
 ## What is PyTorch?
 
 **PyTorch** is a Python-based deep learning framework used to build and train machine learning and deep learning models.
