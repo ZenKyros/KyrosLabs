@@ -93,6 +93,7 @@ export function resolveAssetUrl(src: string | undefined, basePath: string): stri
 /* ————— preprocessing: Obsidian embeds + bare YouTube links ————— */
 
 const IMAGE_EXT_RE = /\.(png|jpe?g|gif|webp|avif|bmp|svg)$/i;
+const INLINE_SVG_RE = /<svg\b[^>]*>[\s\S]*?<\/svg>/gi;
 // Capture: filename | size (e.g., "191" or "191x100")
 const EMBED_RE = /!\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]/g;
 const YOUTUBE_LINE_RE =
@@ -100,6 +101,13 @@ const YOUTUBE_LINE_RE =
 
 function preprocessBody(body: string, basePath: string): string {
   let out = body;
+
+  // Render inline SVG as a data image so nested SVG elements keep their
+  // namespace and survive the Markdown HTML sanitization pipeline.
+  out = out.replace(INLINE_SVG_RE, (svg) => {
+    const encoded = encodeURIComponent(svg).replace(/'/g, "%27");
+    return `![Inline SVG](data:image/svg+xml,${encoded})`;
+  });
 
   // Obsidian-style embeds: ![[diagram.svg|191]] → sanitized HTML with size.
   // Non-asset targets degrade gracefully to a plain [[wikilink]].
@@ -147,7 +155,7 @@ const SANITIZE_SCHEMA = {
     ...(defaultSchema.tagNames ?? []),
     // inline SVG diagram subset — shapes only, no foreignObject/script/use
     "svg", "g", "defs", "title", "desc",
-    "path", "circle", "ellipse", "rect", "line", "polyline", "polygon",
+    "path", "circle", "ellipse", "rect", "line", "polyline", "polygon", "text",
     // media
     "iframe", "video", "source",
   ],
@@ -162,6 +170,7 @@ const SANITIZE_SCHEMA = {
     line: ["x1", "y1", "x2", "y2", "stroke", "strokeWidth", "stroke-width", "strokeLinecap", "stroke-linecap", "opacity"],
     polyline: ["points", "fill", "stroke", "strokeWidth", "stroke-width", "opacity"],
     polygon: ["points", "fill", "stroke", "strokeWidth", "stroke-width", "opacity"],
+    text: ["x", "y", "dx", "dy", "fill", "stroke", "fontFamily", "font-family", "fontSize", "font-size", "fontWeight", "font-weight", "textAnchor", "text-anchor", "transform", "opacity"],
     g: ["transform", "fill", "stroke", "strokeWidth", "stroke-width", "opacity", "fontFamily", "font-family", "fontSize", "font-size", "textAnchor", "text-anchor"],
     // iframes locked to YouTube/Vimeo embed endpoints
     iframe: [

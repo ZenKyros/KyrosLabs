@@ -208,7 +208,7 @@ body {
 .prose-lab ol > li::marker { font-family: var(--font-mono2); font-size: 0.8em; color: var(--muted); }
 .prose-lab li + li { margin-top: 0.4em; }
 .prose-lab blockquote { border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; background: var(--accent-soft); padding: 0.7em 1.1em; color: var(--muted); font-style: italic; }
-.prose-lab hr { border: none; margin: 3em auto; width: 120px; height: 1px; background: var(--line); }
+.prose-lab hr { border: none; margin: 3em 0; width: 100%; height: 1px; background: var(--line); }
 .prose-lab img { border-radius: 10px; border: 1px solid var(--line); margin: 0.4em 0; }
 .prose-lab .katex-display { margin: 1.5em 0; padding: 1.1em 0.6em; overflow-x: auto; overflow-y: hidden; border-block: 1px solid var(--line-soft); }
 .prose-lab .katex { font-size: 1.12em; }
@@ -240,7 +240,8 @@ body {
 .prose-lab input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
 
 /* inline SVG diagrams written directly in markdown */
-.prose-lab svg.md-svg { max-width: 100%; height: auto; }
+.prose-lab svg.md-svg { display: block; width: 100%; max-width: 100%; height: auto; margin: 1.5em 0; color: var(--ink); }
+html.dark .prose-lab svg.md-svg { filter: invert(1); }
 
 /* figures emitted by SmartImage (captions, spacing) */
 .prose-lab figure { margin-inline: 0; }
