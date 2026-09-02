@@ -72,25 +72,25 @@ Choosing the correct chunk size requires a balance: chunks that are too large in
   * **Best Use Cases**: General enterprise documentation, prose, and articles where moderate context is needed.
 * **600–900 Tokens (Large)**
   * **Best Use Cases**: Complex technical software guides, architecture manuals, and legal documents requiring deep reference anchoring.
-  * 
+  
 ## Implementation of Chunking Strategies (LangChain)
 
-#### Step 1: Install Required Libraries
+### Step 1: Install Required Libraries
 ```bash
 !pip install langchain langchain-community langchain-experimental
 ```
 
-#### Step 2: Load the Source Document
+### Step 2: Load the Source Document
 ```python
 # Reading the raw input text file
 text = open("sample_doc.txt", "r").read()
 ```
 
-#### 1. Fixed-Size Chunking Implementation
+### 1. Fixed-Size Chunking Implementation
 ```python
 from langchain.text_splitter import CharacterTextSplitter
 
-splitter = CharacterTextSplitter(chunk_size=300, chunk_overlap=50)
+splitter = CharacterTextSplitter(separator="",chunk_size=300, chunk_overlap=50)
 chunks = splitter.split_text(text)
 
 print("Fixed Size Chunks:", len(chunks))
@@ -98,8 +98,9 @@ print(chunks[0])
 ```
 * **Sample Output Preview:**
   > *Machine learning is a branch of artificial intelligence focused on building systems that learn from data. These systems improve their performance over time without being explicitly programmed. There are many applications of machine learning, such as image classification, speech recognition, recommendation systems, and autonomous driving.*
-
-#### 2. Recursive Character Chunking Implementation
+  <br>
+  <br>
+### 2. Recursive Character Chunking Implementation
 ```python
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -111,8 +112,9 @@ print(chunks[0])
 ```
 * **Sample Output Preview:**
   > *Machine learning is a branch of artificial intelligence focused on building systems that learn from data. These systems improve their performance over time without being explicitly programmed. There are many applications of machine learning, such as image classification, speech recognition, recommendation systems, and autonomous driving.*
-
-#### 3. Token-Based Chunking Implementation
+  <br>
+    <br>
+### 3. Token-Based Chunking Implementation
 ```python
 from langchain.text_splitter import TokenTextSplitter
 
@@ -124,8 +126,9 @@ print(chunks[0])
 ```
 * **Sample Output Preview:**
   > *Supervised learning uses labeled data to train predictive models. It is commonly used for tasks like spam detection and sentiment analysis. Unsupervised learning, on the other hand, discovers hidden patterns in unlabeled data, such as customer clustering or anomaly detection...*
-
-#### 4. Sentence / Semantic Chunking Implementation
+ <br>
+  <br>
+### 4. Sentence / Semantic Chunking Implementation
 ```python
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain_community.embeddings import OpenAIEmbeddings
@@ -136,9 +139,12 @@ splitter = SemanticChunker(embeddings)
 
 chunks = splitter.split_text(text)
 print("Semantic Chunks:", len(chunks))
+#You need to setup api key for OpenAIEmbeddings
+ 
 ```
+<br>
 
-#### 5. Document-Based Chunking Implementation
+### 5. Document-Based Chunking Implementation
 ```python
 from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
