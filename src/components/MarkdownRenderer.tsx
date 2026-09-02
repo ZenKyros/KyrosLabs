@@ -13,7 +13,7 @@
  * are restricted to YouTube/Vimeo embeds, SVG is limited to shape tags.
  */
 
-import { useEffect, useMemo, useState, cloneElement, type ReactNode, type ReactElement, type MouseEvent } from "react";
+import { useEffect, useMemo, useState, useRef, cloneElement, type ReactNode, type ReactElement, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import ReactMarkdown, { defaultUrlTransform, type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -22,6 +22,7 @@ import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import mermaid from "mermaid";
 import { visit } from "unist-util-visit";
 import { useNavigate } from "react-router-dom";
 import {
@@ -215,6 +216,54 @@ function CodeBlock({ className, children }: { className?: string; children?: Rea
   );
 }
 
+let mermaidRenderId = 0;
+
+function MermaidBlock({ children }: { children?: ReactNode }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState(false);
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
+  const source = nodeToText(children).replace(/\n$/, "").trim();
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    const render = async () => {
+      try {
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: "strict",
+          theme: isDark ? "dark" : "base",
+          themeVariables: isDark
+            ? { primaryColor: "#24324a", primaryTextColor: "#e8edf7", lineColor: "#9aa8c2" }
+            : { primaryColor: "#eef6f0", primaryTextColor: "#17211b", lineColor: "#526158" },
+        });
+        const result = await mermaid.render(`mermaid-diagram-${mermaidRenderId++}`, source);
+        if (active && containerRef.current) {
+          containerRef.current.innerHTML = result.svg;
+          result.bindFunctions?.(containerRef.current);
+          setError(false);
+        }
+      } catch {
+        if (active) setError(true);
+      }
+    };
+    render();
+    return () => {
+      active = false;
+    };
+  }, [source, isDark]);
+
+  if (error) return <CodeBlock className="language-mermaid">{children}</CodeBlock>;
+  return <div ref={containerRef} className="mermaid-block not-prose" aria-label="Mermaid diagram" />;
+}
+
 const CALLOUT_META: Record<string, { label: string; icon: ReactNode; cls: string }> = {
   note: { label: "Note", icon: <Info size={13} />, cls: "callout-note" },
   tip: { label: "Tip", icon: <Lightbulb size={13} />, cls: "callout-tip" },
@@ -378,6 +427,12 @@ export default function MarkdownRenderer({ body, basePath = "" }: { body: string
       navigate(`/note/${slug}`);
     };
     return {
+      code: ({ className, children }) => {
+        const language = /language-([\w+-]+)/.exec(className ?? "")?.[1]?.toLowerCase();
+        return language === "mermaid"
+          ? <MermaidBlock>{children}</MermaidBlock>
+          : <CodeBlock className={className}>{children}</CodeBlock>;
+      },
       h1: ({ children }) => (
         <h1 id={slugifyHeading(nodeToText(children))} className="!text-2xl font-semibold mt-10">
           {children}
@@ -452,6 +507,8 @@ export default function MarkdownRenderer({ body, basePath = "" }: { body: string
       pre: ({ children }) => {
         const child = Array.isArray(children) ? children[0] : children;
         const el = child as { props?: { className?: string; children?: ReactNode } } | undefined;
+        const language = /language-([\w+-]+)/.exec(el?.props?.className ?? "")?.[1]?.toLowerCase();
+        if (language === "mermaid") return <MermaidBlock>{el?.props?.children}</MermaidBlock>;
         return <CodeBlock className={el?.props?.className}>{el?.props?.children}</CodeBlock>;
       },
       blockquote: ({ children }) => {
