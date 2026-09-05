@@ -248,11 +248,11 @@ html.dark .prose-lab svg.md-svg { filter: invert(1); }
 .prose-lab figcaption { user-select: none; }
 
 /* code blocks */
-.codeblock { border: 1px solid rgba(160, 180, 220, 0.14); border-radius: 12px; background: var(--code-bg); overflow: hidden; margin: 1.4em 0; box-shadow: var(--shadow-sm); }
+.codeblock { min-width: 0; max-width: 100%; border: 1px solid rgba(160, 180, 220, 0.14); border-radius: 12px; background: var(--code-bg); overflow: hidden; margin: 1.4em 0; box-shadow: var(--shadow-sm); }
 .codeblock-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid rgba(160, 180, 220, 0.1); background: rgba(255, 255, 255, 0.02); }
 .codeblock-lang { font-family: var(--font-mono2); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #8194b3; }
-.codeblock pre { margin: 0; padding: 16px 18px; overflow-x: auto; }
-.codeblock code { font-family: var(--font-mono2); font-size: 13.2px; line-height: 1.7; color: var(--code-ink); }
+.codeblock pre { box-sizing: border-box; max-width: 100%; margin: 0; padding: 16px 18px; overflow-x: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+.codeblock code { display: block; min-width: 0; font-family: var(--font-mono2); font-size: 13.2px; line-height: 1.7; color: var(--code-ink); white-space: inherit; overflow-wrap: inherit; }
 .mermaid-block { margin: 1.6em 0; overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 1.25rem; }
 .mermaid-block svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
 .hljs-keyword, .hljs-selector-tag, .hljs-built_in { color: #82aaff; }

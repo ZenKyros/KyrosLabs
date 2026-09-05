@@ -119,47 +119,43 @@ export default function FileSystemGraph({ data, focus = null, height = 560, clas
     setSize({ w, h });
 
     const prev = new Map(nodesRef.current.map((n) => [n.id, n]));
+    const nodeById = new Map(data.nodes.map((node) => [node.id, node]));
+    const childrenByParent = new Map<string, FileSystemGraphNode[]>();
+    for (const node of data.nodes) {
+      if (!node.parentId) continue;
+      const children = childrenByParent.get(node.parentId) ?? [];
+      children.push(node);
+      childrenByParent.set(node.parentId, children);
+    }
+    const seededPositions = new Map<string, { x: number; y: number }>([["root", { x: w / 2, y: h / 2 }]]);
+    const seedPosition = (node: FileSystemGraphNode): { x: number; y: number } => {
+      const seeded = seededPositions.get(node.id);
+      if (seeded) return seeded;
+      const parent = node.parentId ? nodeById.get(node.parentId) : undefined;
+      const parentPosition = parent ? seedPosition(parent) : { x: w / 2, y: h / 2 };
+      const siblings = node.parentId ? childrenByParent.get(node.parentId) ?? [] : [];
+      const index = Math.max(0, siblings.findIndex((sibling) => sibling.id === node.id));
+      const count = Math.max(siblings.length, 1);
+      const angle = -Math.PI / 2 + (index / count) * Math.PI * 2;
+      const radius = node.type === "note" ? 74 : 142;
+      const position = {
+        x: parentPosition.x + Math.cos(angle) * radius,
+        y: parentPosition.y + Math.sin(angle) * radius,
+      };
+      seededPositions.set(node.id, position);
+      return position;
+    };
+
     nodesRef.current = data.nodes.map((node) => {
       const existing = prev.get(node.id);
-
-      // Position based on type and hierarchy
-      let startX: number, startY: number;
-
-      if (node.type === "root") {
-        startX = w / 2;
-        startY = h / 2;
-      } else if (node.type === "folder") {
-        // Position folders around root in a radial pattern
-        const parent = data.nodes.find(n => n.id === node.parentId);
-        if (parent) {
-          const angle = Math.random() * Math.PI * 2;
-          const distance = 120 + Math.random() * 80;
-          startX = w / 2 + Math.cos(angle) * distance;
-          startY = h / 2 + Math.sin(angle) * distance;
-        } else {
-          startX = w / 2 + (Math.random() - 0.5) * 200;
-          startY = h / 2 + (Math.random() - 0.5) * 200;
-        }
-      } else {
-        // Notes near their parent folder
-        const parent = data.nodes.find(n => n.id === node.parentId);
-        if (parent) {
-          const angle = Math.random() * Math.PI * 2;
-          const distance = 60 + Math.random() * 40;
-          startX = w / 2 + Math.cos(angle) * distance;
-          startY = h / 2 + Math.sin(angle) * distance;
-        } else {
-          startX = w / 2 + (Math.random() - 0.5) * 300;
-          startY = h / 2 + (Math.random() - 0.5) * 300;
-        }
-      }
+      const start = seedPosition(node);
 
       return {
         id: node.id,
         label: node.label,
         type: node.type,
-        x: existing?.x ?? startX,
-        y: existing?.y ?? startY,
+        x: existing?.x ?? start.x,
+        y: existing?.y ?? start.y,
         vx: 0,
         vy: 0,
         fx: null,
@@ -209,7 +205,11 @@ export default function FileSystemGraph({ data, focus = null, height = 560, clas
         if (!a || !b) continue;
 
         // Different rest lengths for different edge types
-        const rest = e.type === "structure" ? 100 : 140;
+        const source = byId.get(e.source);
+        const target = byId.get(e.target);
+        const rest = e.type === "structure"
+          ? source?.type === "note" || target?.type === "note" ? 74 : 142
+          : 140;
         const dx = b.x - a.x;
         const dy = b.y - a.y;
         const d = Math.max(1, Math.sqrt(dx * dx + dy * dy));
@@ -234,8 +234,9 @@ export default function FileSystemGraph({ data, focus = null, height = 560, clas
           if (parent) {
             const dx = parent.x - n.x;
             const dy = parent.y - n.y;
-            n.vx += dx * 0.015 * alpha;
-            n.vy += dy * 0.015 * alpha;
+            const attraction = n.type === "note" ? 0.055 : 0.032;
+            n.vx += dx * attraction * alpha;
+            n.vy += dy * attraction * alpha;
           }
         }
 
