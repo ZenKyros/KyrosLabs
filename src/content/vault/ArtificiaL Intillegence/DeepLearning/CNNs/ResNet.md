@@ -24,13 +24,11 @@ The key idea behind ResNet is the use of **skip (shortcut) connections**, which 
 * Enables networks with dozens or even hundreds of layers
 * Uses fewer parameters than architectures such as VGG for similar or better performance
 
----
-
-# Challenges in Deep Neural Networks
+## Challenges in Deep Neural Networks
 
 As neural networks become deeper, training becomes increasingly difficult. Two important problems are:
 
-## 1. Vanishing / Exploding Gradient Problem
+### 1. Vanishing / Exploding Gradient Problem
 
 During backpropagation, gradients are repeatedly multiplied as they pass through many layers.
 
@@ -43,7 +41,8 @@ When gradients become too small, early layers learn very slowly.
 
 ---
 
-## 2. Degradation Problem
+
+### 2. Degradation Problem
 
 The **degradation problem** occurs when simply adding more layers causes the network's training performance to become worse.
 
@@ -98,10 +97,10 @@ Where:
 * `F(x)` → residual function learned by the convolutional layers
 
 Instead of forcing the layers to learn the entire transformation, they only need to learn the **difference between the input and desired output**.
+>ResNet is like editing a photo instead of recreating it from scratch. You keep the useful original information and learn only the changes needed. So, Output = Original + Changes
 
----
 
-# Skip Connection
+###  Skip Connection
 
 A **skip connection**, also called a **shortcut connection**, bypasses one or more layers and sends the input directly toward the output.
 
@@ -131,9 +130,8 @@ Output = F(x) + x
 
 The shortcut provides a direct path for both **information** and **gradients**.
 
----
 
-# Why Skip Connections Help
+### Why Skip Connections Help
 
 Without a shortcut:
 
@@ -157,9 +155,7 @@ The input has a more direct path to the output.
 
 This makes optimization easier and helps very deep networks train effectively.
 
----
-
-# Residual Block
+## Residual Block
 
 The **residual block** is the fundamental building block of ResNet.
 
@@ -204,9 +200,8 @@ Mathematically:
 Output = ReLU(F(x) + x)
 ```
 
----
 
-# Dimension Matching
+## Dimension Matching
 
 For addition to work:
 
@@ -240,9 +235,8 @@ They cannot be added directly.
 
 ResNet therefore uses a **projection shortcut** when dimensions change.
 
----
 
-# Projection Shortcut
+## Projection Shortcut
 
 A common solution is a **1×1 convolution** in the shortcut path.
 
@@ -282,9 +276,8 @@ For example:
 
 Now the shortcut and residual path can be added.
 
----
 
-# Zero-Padding Shortcut
+## Zero-Padding Shortcut
 
 The original ResNet paper also describes another option for matching dimensions:
 
@@ -323,9 +316,9 @@ Output
 
 Because each block contains a shortcut connection, many blocks can be stacked while maintaining effective information and gradient flow.
 
----
 
-# ResNet-34
+
+## ResNet-34
 
 **ResNet-34** contains **34 layers** and uses **Basic Residual Blocks**.
 
@@ -376,9 +369,9 @@ ResNet-34
     └── Fully Connected Layer
 ```
 
----
 
-# ResNet-34 Feature Map Sizes
+
+### ResNet-34 Feature Map Sizes
 
 For a standard `224 × 224` input:
 
@@ -420,9 +413,8 @@ Shapes
 High-level semantic features
 ```
 
----
 
-# Global Average Pooling (GAP)
+## Global Average Pooling (GAP)
 
 After the final convolutional stage, ResNet uses **Global Average Pooling**.
 
@@ -497,9 +489,9 @@ Bottleneck Block
 
 ---
 
-# BasicBlock vs Bottleneck
+## BasicBlock vs Bottleneck
 
-## BasicBlock
+### BasicBlock
 
 Used mainly in:
 
@@ -528,7 +520,7 @@ ReLU
 
 ---
 
-## Bottleneck Block
+### Bottleneck Block
 
 Used mainly in:
 
@@ -574,151 +566,95 @@ Example:
 
 This allows deeper networks to be built more efficiently.
 
----
+## Implemetation
+```python
 
-# Important ResNet Concepts to Master
+import torch
+import torch.nn as nn
 
-As an AI Engineer, focus on understanding these concepts rather than memorizing every layer:
+class Bottleneck(nn.Module):
+    expansion = 4 # Output channels = planes * expansion
 
-### Must Know
+    def __init__(self, in_channels, planes, stride=1, downsample=None):
+        super(Bottleneck, self).__init__()
+        # 1x1 Conv (Reduce)
+        self.conv1 = nn.Conv2d(in_channels, planes, kernel_size=1, stride=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(planes)
+        
+        # 3x3 Conv (Spatial processing)
+        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(planes)
+        
+        # 1x1 Conv (Expand)
+        self.conv3 = nn.Conv2d(planes, planes * self.expansion, kernel_size=1, stride=1, bias=False)
+        self.bn3 = nn.BatchNorm2d(planes * self.expansion)
+        
+        self.relu = nn.ReLU(inplace=True)
+        self.downsample = downsample # Projection shortcut if dimensions change
 
-* Why ResNet was introduced
-* Degradation problem
-* Residual learning
-* `H(x) = F(x) + x`
-* Skip / shortcut connections
-* Identity shortcut
-* Projection shortcut
-* 1×1 convolution
-* BasicBlock
-* Bottleneck Block
-* Batch Normalization
-* Global Average Pooling
-* ResNet-18 architecture
-* ResNet-34 architecture
-* ResNet-50 architecture
-* Transfer learning with pretrained ResNet
+    def forward(self, x):
+        identity = x
 
-### Understand Conceptually
+        out = self.relu(self.bn1(self.conv1(x)))
+        out = self.relu(self.bn2(self.conv2(out)))
+        out = self.bn3(self.conv3(out))
 
-* ResNet-101
-* ResNet-152
-* Historical comparison with VGG
-* Exact parameter counts
-* Exact layer-by-layer configurations
+        if self.downsample is not None:
+            identity = self.downsample(x)
 
-You do **not** need to memorize every individual layer of ResNet-101 or ResNet-152.
+        out += identity # THE RESIDUAL CONNECTION
+        out = self.relu(out)
 
----
+        return out
 
-# ResNet vs VGG
+class ResNet(nn.Module):
+    def __init__(self, block, layers, num_classes=1000):
+        super(ResNet, self).__init__()
+        self.in_channels = 64
+        
+        # Initial convolution (No pooling in original ResNet, stride=2 instead)
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        self.bn1 = nn.BatchNorm2d(64)
+        self.relu = nn.ReLU(inplace=True)
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        
+        # Residual stages
+        self.layer1 = self._make_layer(block, 64, layers[0])
+        self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
+        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+        
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc = nn.Linear(512 * block.expansion, num_classes)
 
-| Feature                | VGG                  | ResNet            |
-| ---------------------- | -------------------- | ----------------- |
-| Main idea              | Stacked convolutions | Residual learning |
-| Skip connections       | ❌                    | ✅                 |
-| Very deep networks     | Difficult            | Much easier       |
-| Main block             | Conv layers          | Residual block    |
-| Fully connected layers | Large                | Much smaller      |
-| Parameter efficiency   | Lower                | Higher            |
-| Training deep networks | Difficult            | Easier            |
+    def _make_layer(self, block, planes, blocks, stride=1):
+        downsample = None
+        if stride != 1 or self.in_channels != planes * block.expansion:
+            downsample = nn.Sequential(
+                nn.Conv2d(self.in_channels, planes * block.expansion, 1, stride=stride, bias=False),
+                nn.BatchNorm2d(planes * block.expansion),
+            )
 
----
+        layers = []
+        layers.append(block(self.in_channels, planes, stride, downsample))
+        self.in_channels = planes * block.expansion
+        for _ in range(1, blocks):
+            layers.append(block(self.in_channels, planes))
 
-# Mental Model
+        return nn.Sequential(*layers)
 
-Think of a normal deep network as:
+    def forward(self, x):
+        x = self.maxpool(self.relu(self.bn1(self.conv1(x))))
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.fc(x)
+        return x
 
-```text
-Input
-  ↓
-Transform
-  ↓
-Transform
-  ↓
-Transform
-  ↓
-Transform
-  ↓
-Output
+# Factory function to create ResNet-50
+def resnet50():
+    return ResNet(Bottleneck, [3, 4, 6, 3])
 ```
-
-ResNet adds a shortcut:
-
-```text
-              ┌──────────────────────┐
-              │                      │
-Input ────────┼──→ Transformations ──┼──→ Add
-              │                      │
-              └──────────────────────┘
-                         ↓
-                       Output
-```
-
-Instead of forcing the layers to learn:
-
-```text
-H(x)
-```
-
-they learn:
-
-```text
-F(x)
-```
-
-and the original input is added back:
-
-```text
-H(x) = F(x) + x
-```
-
-That simple idea is the core of ResNet.
-
----
-
-# 80/20 Summary
-
-If you remember only a few things about ResNet, remember these:
-
-```text
-ResNet
-  ↓
-Solves the difficulty of training very deep networks
-  ↓
-Uses Skip Connections
-  ↓
-Learns Residual Functions
-  ↓
-F(x) + x
-  ↓
-Better information + gradient flow
-```
-
-The most important equation is:
-
-```text
-H(x) = F(x) + x
-```
-
-The most important component is:
-
-```text
-Residual Block
-```
-
-And the most important architectural idea is:
-
-```text
-Input ────────────────┐
-  ↓                   │
-Conv → BN → ReLU      │
-  ↓                   │
-Conv → BN             │
-  ↓                   │
-  + ←─────────────────┘
-  ↓
-ReLU
-```
-
-**Core takeaway:** ResNet does not simply make CNNs deeper. It makes **deep networks easier to optimize** by giving information and gradients a shortcut through the network.
