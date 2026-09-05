@@ -6,7 +6,7 @@ status:
 tags:
   - Deep Learning
   - CNN
-  - Computer Vision
+  - Computer Visionin 
   - Neural Networks
 ---
 
@@ -50,9 +50,9 @@ EfficientNet asks:
 
 Its answer is **compound scaling**.
 
----
 
-# Core Ideas
+
+## Core Ideas
 
 EfficientNet is mainly built around:
 
@@ -72,9 +72,9 @@ EfficientNet
 
 These are the concepts you should focus on.
 
----
 
-# EfficientNet-B0
+
+## EfficientNet-B0
 
 **EfficientNet-B0** is the baseline architecture.
 
@@ -110,9 +110,8 @@ Fully Connected Layer
 Output
 ```
 
----
 
-# EfficientNet-B0 Architecture
+## EfficientNet-B0 Architecture
 
 For a standard `224 × 224` input:
 
@@ -130,9 +129,9 @@ For a standard `224 × 224` input:
 
 > The exact stage numbering can vary between references; the important part is understanding the **MBConv structure and progressive changes in resolution/channels**.
 
----
 
-# 1. Depthwise Separable Convolution
+
+### 1. Depthwise Separable Convolution
 
 EfficientNet uses **depthwise separable convolutions** inside its MBConv blocks.
 
@@ -146,7 +145,7 @@ Depthwise Convolution
 Pointwise Convolution
 ```
 
-## Depthwise Convolution
+#### Depthwise Convolution
 
 A separate spatial filter is applied to each input channel.
 
@@ -162,7 +161,7 @@ Depthwise Conv:
 Each filter processes one channel
 ```
 
-## Pointwise Convolution
+#### Pointwise Convolution
 
 A `1×1` convolution then mixes information across channels.
 
@@ -178,9 +177,9 @@ Channel mixing
 
 This significantly reduces computation compared with a standard convolution.
 
----
 
-# 2. MBConv
+
+### 2. MBConv
 
 The most important building block in EfficientNet is **MBConv**, or **Mobile Inverted Bottleneck Convolution**.
 
@@ -221,9 +220,7 @@ Project                          │
                Output
 ```
 
----
-
-# Expansion
+## Expansion
 
 Suppose the input has:
 
@@ -255,9 +252,9 @@ So:
 
 The reason is that the depthwise convolution can perform richer feature processing in the larger feature space.
 
----
 
-# Depthwise Convolution
+
+## Depthwise Convolution
 
 After expansion:
 
@@ -273,9 +270,8 @@ Unlike a normal convolution, each channel is processed independently.
 
 This makes the operation much cheaper.
 
----
 
-# Squeeze-and-Excitation (SE)
+## Squeeze-and-Excitation (SE)
 
 EfficientNet also uses **Squeeze-and-Excitation blocks**.
 
@@ -312,9 +308,8 @@ Important channels receive stronger weights, while less useful channels receive 
 
 > **SE asks: "Which channels are important for this input?"**
 
----
 
-# Projection
+## Projection
 
 After feature processing, MBConv uses another `1×1` convolution to project the expanded representation back to a smaller number of channels.
 
@@ -350,9 +345,9 @@ Project
 Output
 ```
 
----
+-
 
-# Why is it called "Inverted Residual"?
+## Why is it called "Inverted Residual"?
 
 A traditional ResNet bottleneck roughly follows:
 
@@ -386,9 +381,9 @@ Narrow → Wide → Narrow
 
 This is why it is called an **inverted bottleneck**.
 
----
 
-# Skip Connection in MBConv
+
+## Skip Connection in MBConv
 
 When the input and output have compatible dimensions, MBConv can use a residual connection:
 
@@ -418,9 +413,9 @@ Output = F(x) + x
 
 But the internal block is much more computationally efficient.
 
----
 
-# 3. Compound Scaling
+
+## 3. Compound Scaling
 
 This is the **signature idea of EfficientNet**.
 
@@ -440,7 +435,7 @@ Increase the number of channels.
 
 This gives the network more feature capacity.
 
----
+
 
 ### Depth Scaling
 
@@ -456,7 +451,6 @@ Increase the number of layers or blocks.
 
 This allows the network to learn more complex representations.
 
----
 
 ### Resolution Scaling
 
@@ -472,9 +466,8 @@ Increase input image resolution.
 
 Higher resolution can preserve more visual information.
 
----
 
-# Why Not Scale Only One?
+## Why Not Scale Only One?
 
 Scaling only one dimension eventually becomes inefficient.
 
@@ -518,9 +511,9 @@ EfficientNet instead balances all three:
     Depth   Width  Resolution
 ```
 
----
 
-# Compound Scaling Formula
+
+## Compound Scaling Formula
 
 EfficientNet uses a compound coefficient `φ` to scale the network.
 
@@ -547,9 +540,9 @@ The important idea is:
 
 > **Increase depth, width, and resolution together instead of increasing only one dimension.**
 
----
 
-# EfficientNet Family
+
+## EfficientNet Family
 
 Starting from EfficientNet-B0, progressively larger models are created:
 
@@ -589,7 +582,7 @@ The goal is to achieve a better **accuracy vs computation trade-off**.
 
 ---
 
-# EfficientNet-Lite
+## EfficientNet-Lite
 
 EfficientNet-Lite is a family designed for more resource-constrained environments such as:
 
@@ -599,9 +592,8 @@ EfficientNet-Lite is a family designed for more resource-constrained environment
 
 The main goal is efficient deployment with limited computational resources.
 
----
 
-# EfficientNet vs ResNet
+## EfficientNet vs ResNet
 
 | Feature          | ResNet                  | EfficientNet            |
 | ---------------- | ----------------------- | ----------------------- |
@@ -626,9 +618,9 @@ EfficientNet
 "How can we scale CNNs efficiently?"
 ```
 
----
 
-# EfficientNet Mental Model
+
+## EfficientNet Mental Model
 
 Think of EfficientNet as combining several ideas:
 

@@ -20,13 +20,35 @@ interface SimNode {
   fy: number | null;
   r: number;
   parentId?: string;
+  color: string;
 }
 
-const NODE_COLORS = {
-  root: "var(--accent)",
-  folder: "#3b82f6",
-  note: "#22c55e",
-};
+const ROOT_COLOR = "var(--accent)";
+const FOLDER_PALETTE = [
+  "#1bdbe8", "#c4ff30", "#ee7b10", "#5d6b8a", "#d13058", "#c0d6cc",
+  "#856f3d", "#b30eff", "#7a5c72", "#567d82", "#8a704f", "#65734b",
+  "#6b7085", "#e3af99", "#86c5bf", "#fff3ecc3", "#665f7a", "#6c7654",
+];
+const folderColors = new Map<string, string>();
+
+function folderColor(folderId: string): string {
+  const existing = folderColors.get(folderId);
+  if (existing) return existing;
+
+  const used = new Set(folderColors.values());
+  const paletteColor = FOLDER_PALETTE.find((color) => !used.has(color));
+  if (paletteColor) {
+    folderColors.set(folderId, paletteColor);
+    return paletteColor;
+  }
+
+  // Keep extending the muted palette without ever repeating an exact color.
+  const index = folderColors.size;
+  const hue = (index * 47) % 360;
+  const color = `hsl(${hue} 22% ${42 + (index % 4) * 5}%)`;
+  folderColors.set(folderId, color);
+  return color;
+}
 
 const NODE_RADIUS = {
   root: 14,
@@ -60,6 +82,13 @@ export default function FileSystemGraph({ data, focus = null, height = 560, clas
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     []
   );
+  const colorsByFolder = useMemo(() => {
+    const colors = new Map<string, string>([["root", ROOT_COLOR]]);
+    for (const node of data.nodes) {
+      if (node.type === "folder") colors.set(node.id, folderColor(node.id));
+    }
+    return colors;
+  }, [data]);
 
   useEffect(() => {
     if (reduced) return;
@@ -137,6 +166,9 @@ export default function FileSystemGraph({ data, focus = null, height = 560, clas
         fy: null,
         r: NODE_RADIUS[node.type],
         parentId: node.parentId,
+        color: node.type === "root"
+          ? ROOT_COLOR
+          : colorsByFolder.get(node.type === "folder" ? node.id : node.parentId ?? "root") ?? ROOT_COLOR,
       };
     });
     alphaRef.current = 1;
@@ -474,17 +506,17 @@ export default function FileSystemGraph({ data, focus = null, height = 560, clas
               >
                 <circle
                   r={n.r + 3 + shine * 4}
-                  fill={NODE_COLORS[n.type]}
+                  fill={n.color}
                   opacity={(0.12 + shine * 0.2) * (dim ? 0.35 : 1)}
                   filter="url(#filesystem-node-glow)"
                   pointerEvents="none"
                 />
                 {(isFocus || isHover) && (
-                  <circle r={n.r + 7} fill="none" stroke={NODE_COLORS[n.type]} strokeOpacity={0.35} strokeWidth={1} />
+                  <circle r={n.r + 7} fill="none" stroke={n.color} strokeOpacity={0.35} strokeWidth={1} />
                 )}
                 <circle
                   r={n.r}
-                  fill={NODE_COLORS[n.type]}
+                  fill={n.color}
                   fillOpacity={isFocus || isHover ? 1 : 0.85}
                   stroke="var(--bg)"
                   strokeWidth={1.6 / Math.max(view.k, 0.6)}
@@ -528,17 +560,17 @@ export default function FileSystemGraph({ data, focus = null, height = 560, clas
       {/* legend */}
       <div className="absolute bottom-3 left-3 flex flex-wrap gap-x-4 gap-y-1 bg-panel/90 border border-line rounded-md px-3 py-2">
         <span className="flex items-center gap-1.5 font-mono2 text-[9.5px] tracking-[0.14em] uppercase text-muted">
-          <span className="w-[7px] h-[7px] rounded-full" style={{ background: NODE_COLORS.root }} />
+          <span className="w-[7px] h-[7px] rounded-full" style={{ background: ROOT_COLOR }} />
           Root
         </span>
-        <span className="flex items-center gap-1.5 font-mono2 text-[9.5px] tracking-[0.14em] uppercase text-muted">
-          <span className="w-[7px] h-[7px] rounded-full" style={{ background: NODE_COLORS.folder }} />
-          Folder
-        </span>
-        <span className="flex items-center gap-1.5 font-mono2 text-[9.5px] tracking-[0.14em] uppercase text-muted">
-          <span className="w-[7px] h-[7px] rounded-full" style={{ background: NODE_COLORS.note }} />
-          Note
-        </span>
+        {[...colorsByFolder.entries()]
+          .filter(([id]) => id !== "root")
+          .map(([id, color]) => (
+            <span key={id} className="flex items-center gap-1.5 font-mono2 text-[9.5px] tracking-[0.14em] uppercase text-muted">
+              <span className="w-[7px] h-[7px] rounded-full" style={{ background: color }} />
+              {data.nodes.find((node) => node.id === id)?.label ?? id}
+            </span>
+          ))}
       </div>
 
       {/* hover card */}
@@ -551,7 +583,7 @@ export default function FileSystemGraph({ data, focus = null, height = 560, clas
           }}
         >
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-[6px] h-[6px] rotate-45" style={{ background: NODE_COLORS[hoveredNode.type] }} />
+            <span className="w-[6px] h-[6px] rotate-45" style={{ background: hoveredNode.color }} />
             <span className="font-mono2 text-[9.5px] uppercase tracking-[0.14em] text-faint">{hoveredNode.type}</span>
           </div>
           <div className="font-display font-medium text-[14.5px] leading-tight">{hoveredNode.label}</div>

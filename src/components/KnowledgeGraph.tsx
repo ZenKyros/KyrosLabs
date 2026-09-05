@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { Minus, Plus, Maximize2 } from "lucide-react";
 import type { GraphData } from "../engine/graph";
 import type { NoteType, EdgeKind } from "../engine/types";
-import { TYPE_COLOR, TYPE_LABEL } from "./ui";
 import { categoryLabel } from "../engine/vault";
 
 interface SimNode {
@@ -23,8 +22,21 @@ interface SimNode {
   degree: number;
   type: NoteType;
   category: string;
+  folderGroup: string;
+  color: string;
   title: string;
   r: number;
+}
+
+function folderGroup(note: { category: string; subpath: string[] }): string {
+  return note.subpath[note.subpath.length - 1] ?? note.category;
+}
+
+function folderColor(group: string): string {
+  let hash = 0;
+  for (let i = 0; i < group.length; i++) hash = (hash * 31 + group.charCodeAt(i)) | 0;
+  const hue = Math.abs(hash * 137.508) % 360;
+  return `hsl(${hue.toFixed(1)} 68% 52%)`;
 }
 
 const EDGE_STYLE: Record<EdgeKind, { stroke: string; dash?: string; width: number; opacity: number }> = {
@@ -119,6 +131,8 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
         degree: d.degree,
         type: d.note.meta.type,
         category: d.note.category,
+        folderGroup: folderGroup(d.note),
+        color: folderColor(folderGroup(d.note)),
         title: d.note.meta.title,
         r: 5 + Math.min(d.degree, 12) * 1.15,
       };
@@ -398,11 +412,11 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
                 onPointerLeave={() => setHover((h) => (h === n.slug ? null : h))}
               >
                 {(isFocus || isHover) && (
-                  <circle r={n.r + 7} fill="none" stroke={TYPE_COLOR[n.type]} strokeOpacity={0.35} strokeWidth={1} />
+                  <circle r={n.r + 7} fill="none" stroke={n.color} strokeOpacity={0.35} strokeWidth={1} />
                 )}
                 <circle
                   r={n.r}
-                  fill={TYPE_COLOR[n.type]}
+                  fill={n.color}
                   fillOpacity={isFocus || isHover ? 1 : 0.82}
                   stroke="var(--bg)"
                   strokeWidth={1.6 / Math.max(view.k, 0.6)}
@@ -445,10 +459,10 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
 
       {/* legend */}
       <div className="absolute bottom-3 left-3 flex flex-wrap gap-x-4 gap-y-1 bg-panel/90 border border-line rounded-md px-3 py-2">
-        {(Object.keys(TYPE_LABEL) as NoteType[]).filter((t) => t !== "note" || data.nodes.some((n) => n.note.meta.type === "note")).map((t) => (
-          <span key={t} className="flex items-center gap-1.5 font-mono2 text-[9.5px] tracking-[0.14em] uppercase text-muted">
-            <span className="w-[7px] h-[7px] rounded-full" style={{ background: TYPE_COLOR[t] }} />
-            {TYPE_LABEL[t]}
+        {[...new Map(nodes.map((n) => [n.folderGroup, n.color])).entries()].map(([group, color]) => (
+          <span key={group} className="flex items-center gap-1.5 font-mono2 text-[9.5px] tracking-[0.14em] uppercase text-muted">
+            <span className="w-[7px] h-[7px] rounded-full" style={{ background: color }} />
+            {categoryLabel(group)}
           </span>
         ))}
       </div>
@@ -463,8 +477,8 @@ export default function KnowledgeGraph({ data, focus = null, height = 560, class
           }}
         >
           <div className="font-display font-medium text-[13.5px] leading-tight">{hoveredNode.title}</div>
-          <div className="font-mono2 text-[9.5px] tracking-[0.14em] uppercase mt-1.5" style={{ color: TYPE_COLOR[hoveredNode.type] }}>
-            {TYPE_LABEL[hoveredNode.type]} · {categoryLabel(hoveredNode.category)}
+          <div className="font-mono2 text-[9.5px] tracking-[0.14em] uppercase mt-1.5" style={{ color: hoveredNode.color }}>
+            {categoryLabel(hoveredNode.folderGroup)}
           </div>
           <div className="font-mono2 text-[9.5px] text-faint mt-1">
             {hoveredNode.degree} connection{hoveredNode.degree === 1 ? "" : "s"} · click to open
