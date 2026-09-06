@@ -250,7 +250,7 @@ function MermaidBlock({ children }: { children?: ReactNode }) {
           securityLevel: "strict",
           theme: isDark ? "dark" : "base",
           themeVariables: isDark
-            ? { primaryColor: "#24324a", primaryTextColor: "#e8edf7", lineColor: "#9aa8c2" }
+            ? { primaryColor: "#24231f", primaryTextColor: "#e8e5dc", lineColor: "#aaa69b" }
             : { primaryColor: "#eef6f0", primaryTextColor: "#17211b", lineColor: "#526158" },
         });
         const result = await mermaid.render(`mermaid-diagram-${mermaidRenderId++}`, source);
