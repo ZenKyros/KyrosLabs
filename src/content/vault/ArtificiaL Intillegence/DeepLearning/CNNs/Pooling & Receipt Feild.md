@@ -205,7 +205,7 @@ $$
 | Average Pooling | Mean value | Overall information |
 
 **In modern CNNs, Max Pooling is used much more frequently.**
-
+![Max vs Avg Pooling](image.png)
 ---
 
 ## Pooling Output Size Formula
