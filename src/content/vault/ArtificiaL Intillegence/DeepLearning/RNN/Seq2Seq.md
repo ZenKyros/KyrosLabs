@@ -1,5 +1,4 @@
 ---
-
 title: Sequence-to-Sequence (Seq2Seq) Models
 type: Notes
 level: Beginner
@@ -635,7 +634,7 @@ This motivated the development of **Attention**.
 Attention removes the requirement that the decoder rely only on one fixed context vector.
 
 Instead, the decoder can access **all encoder hidden states**.
-
+![Seq2Se1 with Attention](image-4.png)
 ```text
 Encoder
 
