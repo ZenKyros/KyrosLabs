@@ -550,10 +550,13 @@ export default function MarkdownRenderer({ body, basePath = "" }: { body: string
       img: ({ src, alt, width }) => (
         <SmartImage src={typeof src === "string" ? src : undefined} alt={alt} width={width} basePath={basePath} />
       ),
-      // inline/raw SVG diagrams — sized to the column, inherit theme colors
-      svg: ({ node: _node, className, ...rest }) => (
-        <svg {...rest} className={`md-svg${className ? ` ${className}` : ""}`} />
-      ),
+      // Size Markdown diagrams without overriding KaTeX's internal SVG glyphs.
+      svg: ({ node: _node, className, ...rest }) => {
+        if (rest.width === "400em") {
+          return <svg {...rest} className={className} />;
+        }
+        return <svg {...rest} className={`md-svg${className ? ` ${className}` : ""}`} />;
+      },
       // sanitized video embeds (YouTube/Vimeo only — enforced by the schema)
       iframe: ({ node: _node, src }) => (
         <div className="not-prose my-7 aspect-video overflow-hidden rounded-xl border border-line bg-panel shadow-[var(--shadow-sm)]">
