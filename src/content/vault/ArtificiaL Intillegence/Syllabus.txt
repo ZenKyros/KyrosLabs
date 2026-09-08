@@ -1,0 +1,644 @@
+│
+├── 01 Foundations
+│   │
+│   ├── Mathematics
+│   │   ├── Linear Algebra
+│   │   │   ├── Vectors & Vector Operations (MASTER)
+│   │   │   ├── Matrices & Matrix Operations (MASTER)
+│   │   │   ├── Matrix Multiplication (MASTER)
+│   │   │   ├── Linear Systems & Transformations (MASTER)
+│   │   │   ├── Vector Spaces, Subspaces, Basis & Dimension (STRONG)
+│   │   │   ├── Norms, Distances & Similarity (MASTER)
+│   │   │   ├── Orthogonality & Projections (MASTER)
+│   │   │   ├── Eigenvalues & Eigenvectors (STRONG)
+│   │   │   ├── Eigendecomposition (STRONG)
+│   │   │   ├── SVD (STRONG)
+│   │   │   ├── PCA (MASTER)
+│   │   │   └── Tensors (MASTER)
+│   │   │
+│   │   ├── Calculus
+│   │   │   ├── Functions & Limits (KNOW)
+│   │   │   ├── Derivatives (MASTER)
+│   │   │   ├── Partial Derivatives (MASTER)
+│   │   │   ├── Gradients & Directional Derivatives (MASTER)
+│   │   │   ├── Jacobians & Hessians (STRONG)
+│   │   │   ├── Chain Rule (MASTER)
+│   │   │   ├── Computational Graphs (MASTER)
+│   │   │   ├── Optimization (MASTER)
+│   │   │   └── Automatic Differentiation (MASTER)
+│   │   │
+│   │   ├── Probability & Statistics
+│   │   │   ├── Probability (MASTER)
+│   │   │   ├── Random Variables (MASTER)
+│   │   │   ├── Distributions (MASTER)
+│   │   │   ├── Expectation & Variance (MASTER)
+│   │   │   ├── Covariance & Correlation (MASTER)
+│   │   │   ├── Conditional Probability (MASTER)
+│   │   │   ├── Bayes Theorem (MASTER)
+│   │   │   ├── MLE & MAP (STRONG)
+│   │   │   ├── Sampling (STRONG)
+│   │   │   ├── Hypothesis Testing (KNOW)
+│   │   │   ├── Confidence Intervals (KNOW)
+│   │   │   └── Regression Statistics (STRONG)
+│   │   │
+│   │   └── Information Theory
+│   │       ├── Information (STRONG)
+│   │       ├── Entropy (MASTER)
+│   │       ├── Cross Entropy (MASTER)
+│   │       ├── KL Divergence (MASTER)
+│   │       ├── Jensen-Shannon Divergence (STRONG)
+│   │       ├── Mutual Information (STRONG)
+│   │       └── Perplexity (MASTER)
+│   │
+│   ├── Programming
+│   │   ├── Python
+│   │   │   ├── Python Fundamentals (MASTER)
+│   │   │   ├── Functions & Classes (MASTER)
+│   │   │   ├── Iterators & Generators (STRONG)
+│   │   │   ├── Exceptions (MASTER)
+│   │   │   ├── Modules & Packages (MASTER)
+│   │   │   ├── Type Hints (STRONG)
+│   │   │   ├── Virtual Environments (MASTER)
+│   │   │   ├── Async Python (MASTER)
+│   │   │   └── Scientific Python (MASTER)
+│   │   │
+│   │   ├── NumPy
+│   │   │   ├── Arrays & Operations (MASTER)
+│   │   │   ├── Broadcasting (MASTER)
+│   │   │   ├── Vectorization (MASTER)
+│   │   │   └── Linear Algebra (MASTER)
+│   │   │
+│   │   ├── Pandas
+│   │   │   ├── DataFrames (STRONG)
+│   │   │   ├── Selection (STRONG)
+│   │   │   ├── Cleaning (STRONG)
+│   │   │   ├── GroupBy (STRONG)
+│   │   │   └── Data Pipelines (MASTER)
+│   │   │
+│   │   ├── Visualization
+│   │   │   ├── Matplotlib (STRONG)
+│   │   │   └── Seaborn (KNOW)
+│   │   │
+│   │   └── Software Engineering
+│   │       ├── Git (MASTER)
+│   │       ├── Testing (MASTER)
+│   │       ├── Debugging (MASTER)
+│   │       ├── Logging (MASTER)
+│   │       ├── APIs (MASTER)
+│   │       ├── REST (MASTER)
+│   │       ├── JSON (MASTER)
+│   │       ├── CLI (STRONG)
+│   │       └── Packaging (STRONG)
+│   │
+│   ├── Data
+│   │   ├── Data Collection (STRONG)
+│   │   ├── Data Cleaning (MASTER)
+│   │   ├── Data Types (MASTER)
+│   │   ├── Structured & Unstructured Data (MASTER)
+│   │   ├── Data Splitting (MASTER)
+│   │   ├── Data Leakage (MASTER)
+│   │   ├── Sampling (MASTER)
+│   │   ├── Normalization (MASTER)
+│   │   ├── Augmentation (STRONG)
+│   │   ├── Dataset Versioning (STRONG)
+│   │   └── Data Quality (MASTER)
+│   │
+│   └── PyTorch
+│       ├── Tensors (MASTER)
+│       ├── Tensor Operations (MASTER)
+│       ├── Autograd (MASTER)
+│       ├── Computational Graphs (MASTER)
+│       ├── nn.Module (MASTER)
+│       ├── Parameters & Buffers (MASTER)
+│       ├── Datasets & DataLoaders (MASTER)
+│       ├── Loss Functions (MASTER)
+│       ├── Optimizers (MASTER)
+│       ├── Training Loops (MASTER)
+│       ├── Checkpoints (MASTER)
+│       ├── GPU Training (MASTER)
+│       ├── Mixed Precision (MASTER)
+│       ├── Distributed Training (STRONG)
+│       └── Profiling (STRONG)
+│
+├── 02 Machine Learning
+│   │
+│   ├── ML Fundamentals
+│   │   ├── Features & Labels (MASTER)
+│   │   ├── Training & Inference (MASTER)
+│   │   ├── Generalization (MASTER)
+│   │   ├── Bias & Variance (MASTER)
+│   │   ├── Underfitting & Overfitting (MASTER)
+│   │   └── Inductive Bias (STRONG)
+│   │
+│   ├── Supervised Learning
+│   │   ├── Linear Regression (MASTER)
+│   │   ├── Logistic Regression (MASTER)
+│   │   ├── k-NN (STRONG)
+│   │   ├── Naive Bayes (STRONG)
+│   │   ├── Decision Trees (MASTER)
+│   │   ├── Random Forest (MASTER)
+│   │   ├── Gradient Boosting (MASTER)
+│   │   ├── XGBoost (MASTER)
+│   │   ├── LightGBM (STRONG)
+│   │   └── CatBoost (KNOW)
+│   │
+│   ├── Unsupervised Learning
+│   │   ├── K-Means (MASTER)
+│   │   ├── Hierarchical Clustering (STRONG)
+│   │   ├── DBSCAN (STRONG)
+│   │   ├── Gaussian Mixture Models (STRONG)
+│   │   ├── PCA (MASTER)
+│   │   ├── t-SNE (KNOW)
+│   │   └── UMAP (KNOW)
+│   │
+│   ├── Learning Paradigms
+│   │   ├── Semi-Supervised Learning (STRONG)
+│   │   ├── Self-Supervised Learning (MASTER)
+│   │   ├── Online Learning (STRONG)
+│   │   └── Ensemble Learning (MASTER)
+│   │
+│   ├── Feature Engineering
+│   │   ├── Scaling (MASTER)
+│   │   ├── Encoding (MASTER)
+│   │   ├── Feature Selection (STRONG)
+│   │   ├── Feature Extraction (STRONG)
+│   │   └── Feature Crosses (KNOW)
+│   │
+│   ├── Evaluation
+│   │   ├── Accuracy (MASTER)
+│   │   ├── Precision & Recall (MASTER)
+│   │   ├── F1 (MASTER)
+│   │   ├── ROC-AUC (MASTER)
+│   │   ├── PR-AUC (MASTER)
+│   │   ├── Calibration (STRONG)
+│   │   ├── Cross Validation (MASTER)
+│   │   └── Error Analysis (MASTER)
+│   │
+│   └── Optimization
+│       ├── Gradient Descent (MASTER)
+│       ├── SGD (MASTER)
+│       ├── Momentum (MASTER)
+│       ├── Adam (MASTER)
+│       ├── AdamW (MASTER)
+│       ├── Learning Rate Schedules (MASTER)
+│       ├── Weight Decay (MASTER)
+│       ├── Regularization (MASTER)
+│       └── Early Stopping (MASTER)
+│
+├── 03 Deep Learning
+│   │
+│   ├── Neural Networks
+│   │   ├── Perceptron (MASTER)
+│   │   ├── MLP (MASTER)
+│   │   ├── Forward Propagation (MASTER)
+│   │   ├── Backpropagation (MASTER)
+│   │   ├── Activation Functions (MASTER)
+│   │   ├── Loss Functions (MASTER)
+│   │   ├── Initialization (MASTER)
+│   │   ├── Normalization (MASTER)
+│   │   ├── Dropout (STRONG)
+│   │   └── Residual Connections (MASTER)
+│   │
+│   ├── CNNs
+│   │   ├── Convolution (MASTER)
+│   │   ├── Kernels (MASTER)
+│   │   ├── Stride & Padding (MASTER)
+│   │   ├── Pooling (STRONG)
+│   │   ├── Receptive Fields (MASTER)
+│   │   ├── ResNet (MASTER)
+│   │   ├── EfficientNet (STRONG)
+│   │   └── Vision Architectures (STRONG)
+│   │
+│   ├── RNNs
+│   │   ├── RNN (STRONG)
+│   │   ├── Vanishing Gradients (MASTER)
+│   │   ├── LSTM (MASTER)
+│   │   ├── GRU (MASTER)
+│   │   ├── Bidirectional RNN (STRONG)
+│   │   └── Seq2Seq (STRONG)
+│   │
+│   └── Generative Models
+│       ├── Autoencoders (STRONG)
+│       ├── VAEs (STRONG)
+│       ├── GANs (KNOW)
+│       ├── Diffusion (MASTER)
+│       ├── Score-Based Models (STRONG)
+│       ├── Normalizing Flows (KNOW)
+│       └── Flow Matching (STRONG)
+│
+├── 04 Transformers
+│   │
+│   ├── Attention
+│   │   ├── Query Key Value (MASTER)
+│   │   ├── Scaled Dot Product Attention (MASTER)
+│   │   ├── Self Attention (MASTER)
+│   │   ├── Cross Attention (MASTER)
+│   │   ├── Causal Attention (MASTER)
+│   │   └── Attention Complexity (MASTER)
+│   │
+│   ├── Transformer Architecture
+│   │   ├── Encoder (MASTER)
+│   │   ├── Decoder (MASTER)
+│   │   ├── Encoder-Decoder (MASTER)
+│   │   ├── Multi-Head Attention (MASTER)
+│   │   ├── Feed Forward Networks (MASTER)
+│   │   ├── Residual Connections (MASTER)
+│   │   └── Layer Normalization (MASTER)
+│   │
+│   ├── Positional Representations
+│   │   ├── Sinusoidal Encoding (STRONG)
+│   │   ├── Learned Embeddings (STRONG)
+│   │   ├── RoPE (MASTER)
+│   │   └── ALiBi (KNOW)
+│   │
+│   ├── Transformer Optimization
+│   │   ├── RMSNorm (MASTER)
+│   │   ├── SwiGLU (MASTER)
+│   │   ├── Pre-Norm vs Post-Norm (MASTER)
+│   │   ├── Efficient Attention (MASTER)
+│   │   └── FlashAttention (MASTER)
+│   │
+│   ├── Transformer Inference
+│   │   ├── KV Cache (MASTER)
+│   │   ├── Prefill (MASTER)
+│   │   ├── Decode (MASTER)
+│   │   ├── Batching (MASTER)
+│   │   └── Memory Management (MASTER)
+│   │
+│   └── Transformer From Scratch
+│       ├── Implementation (MASTER)
+│       ├── Training (MASTER)
+│       └── Inference (MASTER)
+│
+├── 05 NLP
+│   │
+│   ├── Text Processing
+│   │   ├── Tokenization (MASTER)
+│   │   ├── BPE (MASTER)
+│   │   ├── WordPiece (STRONG)
+│   │   ├── SentencePiece (STRONG)
+│   │   └── Unigram (KNOW)
+│   │
+│   ├── Embeddings
+│   │   ├── Word2Vec (STRONG)
+│   │   ├── GloVe (KNOW)
+│   │   ├── FastText (KNOW)
+│   │   └── Contextual Embeddings (MASTER)
+│   │
+│   └── NLP Tasks
+│       ├── Language Modeling (MASTER)
+│       ├── Classification (MASTER)
+│       ├── NER (STRONG)
+│       ├── Information Extraction (MASTER)
+│       ├── Translation (STRONG)
+│       ├── Summarization (STRONG)
+│       ├── Question Answering (STRONG)
+│       └── NLP Evaluation (MASTER)
+│
+├── 06 LLMs
+│   │
+│   ├── LLM Fundamentals
+│   │   ├── Language Models (MASTER)
+│   │   ├── Causal Language Modeling (MASTER)
+│   │   ├── Tokenization (MASTER)
+│   │   ├── Architecture (MASTER)
+│   │   ├── Context Windows (MASTER)
+│   │   └── Scaling Laws (STRONG)
+│   │
+│   ├── Pretraining
+│   │   ├── Dataset Construction (MASTER)
+│   │   ├── Data Mixtures (STRONG)
+│   │   ├── Data Filtering (MASTER)
+│   │   ├── Pretraining Objectives (MASTER)
+│   │   ├── Training Stability (STRONG)
+│   │   └── Scaling (STRONG)
+│   │
+│   ├── Instruction Tuning
+│   │   ├── SFT (MASTER)
+│   │   ├── Instruction Datasets (MASTER)
+│   │   └── Chat Templates (MASTER)
+│   │
+│   ├── Preference Optimization
+│   │   ├── RLHF (STRONG)
+│   │   ├── Reward Models (STRONG)
+│   │   ├── PPO (STRONG)
+│   │   ├── DPO (MASTER)
+│   │   └── Preference Data (MASTER)
+│   │
+│   ├── Fine-Tuning
+│   │   ├── Full Fine-Tuning (STRONG)
+│   │   ├── LoRA (MASTER)
+│   │   ├── QLoRA (MASTER)
+│   │   ├── Adapters (STRONG)
+│   │   └── PEFT (MASTER)
+│   │
+│   ├── Quantization
+│   │   ├── INT8 (MASTER)
+│   │   ├── INT4 (MASTER)
+│   │   ├── GPTQ (STRONG)
+│   │   ├── AWQ (STRONG)
+│   │   └── Quantization-Aware Training (STRONG)
+│   │
+│   ├── Inference
+│   │   ├── Sampling (MASTER)
+│   │   ├── Temperature (MASTER)
+│   │   ├── Top-K (MASTER)
+│   │   ├── Top-P (MASTER)
+│   │   ├── Speculative Decoding (STRONG)
+│   │   ├── Continuous Batching (MASTER)
+│   │   └── Serving (MASTER)
+│   │
+│   └── Advanced LLMs
+│       ├── Long Context (MASTER)
+│       ├── Mixture of Experts (STRONG)
+│       ├── Multilingual LLMs (STRONG)
+│       ├── Reasoning Models (MASTER)
+│       ├── Distillation (STRONG)
+│       └── Model Merging (KNOW)
+│
+├── 07 Embeddings & Retrieval
+│   │
+│   ├── Embeddings
+│   │   ├── Vector Representations (MASTER)
+│   │   ├── Semantic Similarity (MASTER)
+│   │   ├── Sentence Embeddings (MASTER)
+│   │   ├── Embedding Models (MASTER)
+│   │   └── Embedding Evaluation (MASTER)
+│   │
+│   ├── Retrieval
+│   │   ├── Dense Retrieval (MASTER)
+│   │   ├── Sparse Retrieval (MASTER)
+│   │   ├── BM25 (MASTER)
+│   │   ├── Hybrid Search (MASTER)
+│   │   ├── Vector Search (MASTER)
+│   │   └── Reranking (MASTER)
+│   │
+│   └── Search Systems
+│       ├── Chunking (MASTER)
+│       ├── Indexing (MASTER)
+│       ├── Metadata Filtering (MASTER)
+│       ├── Query Expansion (STRONG)
+│       └── Retrieval Evaluation (MASTER)
+│
+├── 08 RAG
+│   │
+│   ├── RAG Fundamentals (MASTER)
+│   ├── Document Ingestion (MASTER)
+│   ├── Chunking Strategies (MASTER)
+│   ├── Embedding (MASTER)
+│   ├── Vector Databases (MASTER)
+│   ├── Indexing (MASTER)
+│   ├── Retrieval (MASTER)
+│   ├── Reranking (MASTER)
+│   ├── Query Transformation (MASTER)
+│   ├── Hybrid Retrieval (MASTER)
+│   ├── Metadata Filtering (MASTER)
+│   ├── Context Construction (MASTER)
+│   ├── Generation (MASTER)
+│   ├── Citations (MASTER)
+│   ├── Graph RAG (STRONG)
+│   ├── Agentic RAG (MASTER)
+│   ├── Multimodal RAG (STRONG)
+│   └── RAG Evaluation (MASTER)
+│
+├── 09 AI Agents
+│   │
+│   ├── Agent Fundamentals (MASTER)
+│   ├── Agent Architecture (MASTER)
+│   ├── Tools (MASTER)
+│   ├── Function Calling (MASTER)
+│   ├── Tool Use (MASTER)
+│   ├── Planning (MASTER)
+│   ├── Reasoning (MASTER)
+│   ├── Agent Loops (MASTER)
+│   ├── ReAct (STRONG)
+│   ├── Memory
+│   │   ├── Short-Term Memory (MASTER)
+│   │   ├── Long-Term Memory (STRONG)
+│   │   └── Episodic Memory (STRONG)
+│   │
+│   ├── Agent Workflows
+│   │   ├── Sequential Agents (MASTER)
+│   │   ├── Parallel Agents (MASTER)
+│   │   ├── Workflow Agents (MASTER)
+│   │   └── Autonomous Agents (STRONG)
+│   │
+│   ├── Multi-Agent Systems (STRONG)
+│   ├── Agentic RAG (MASTER)
+│   ├── Browser Agents (STRONG)
+│   ├── Coding Agents (MASTER)
+│   ├── Computer Use (STRONG)
+│   ├── MCP (MASTER)
+│   ├── Agent Evaluation (MASTER)
+│   └── Agent Safety (MASTER)
+│
+├── 10 Multimodal AI
+│   │
+│   ├── Vision-Language Models (MASTER)
+│   ├── Image-Text Models (MASTER)
+│   ├── Audio-Text Models (STRONG)
+│   ├── Video-Language Models (STRONG)
+│   ├── Multimodal Embeddings (MASTER)
+│   ├── Image Understanding (MASTER)
+│   ├── OCR (STRONG)
+│   ├── Speech Understanding (STRONG)
+│   ├── Text-to-Speech (STRONG)
+│   ├── Speech-to-Speech (STRONG)
+│   ├── Image Generation (STRONG)
+│   ├── Video Generation (KNOW)
+│   └── Multimodal Agents (MASTER)
+│
+├── 11 Computer Vision
+│   │
+│   ├── Image Processing (STRONG)
+│   ├── Image Classification (STRONG)
+│   ├── Object Detection
+│   │   ├── R-CNN (KNOW)
+│   │   ├── Faster R-CNN (STRONG)
+│   │   ├── YOLO (MASTER)
+│   │   └── DETR (STRONG)
+│   ├── Semantic Segmentation (STRONG)
+│   ├── Instance Segmentation (STRONG)
+│   ├── Vision Transformers (MASTER)
+│   ├── CLIP (MASTER)
+│   ├── OCR (STRONG)
+│   ├── Pose Estimation (KNOW)
+│   ├── Depth Estimation (KNOW)
+│   └── 3D Vision (KNOW)
+│
+├── 12 Generative AI
+│   │
+│   ├── Generative Modeling (MASTER)
+│   ├── Autoencoders (STRONG)
+│   ├── VAEs (STRONG)
+│   ├── GANs (KNOW)
+│   ├── Diffusion Models (MASTER)
+│   ├── Latent Diffusion (MASTER)
+│   ├── Score Matching (STRONG)
+│   ├── Flow Matching (STRONG)
+│   ├── Text Generation (MASTER)
+│   ├── Image Generation (STRONG)
+│   ├── Video Generation (KNOW)
+│   ├── Audio Generation (KNOW)
+│   ├── 3D Generation (KNOW)
+│   └── Multimodal Generation (STRONG)
+│
+├── 13 Reinforcement Learning
+│   │
+│   ├── RL Fundamentals (STRONG)
+│   ├── States, Actions & Rewards (STRONG)
+│   ├── Policies (STRONG)
+│   ├── Value Functions (STRONG)
+│   ├── MDPs (MASTER)
+│   ├── Bellman Equations (MASTER)
+│   ├── Monte Carlo (STRONG)
+│   ├── Temporal Difference (STRONG)
+│   ├── Q-Learning (STRONG)
+│   ├── SARSA (KNOW)
+│   ├── DQN (STRONG)
+│   ├── Policy Gradients (STRONG)
+│   ├── Actor-Critic (STRONG)
+│   ├── PPO (MASTER)
+│   ├── SAC (STRONG)
+│   ├── Offline RL (STRONG)
+│   ├── Model-Based RL (KNOW)
+│   └── RLHF (MASTER)
+│
+├── 14 GPU & AI Systems
+│   │
+│   ├── GPU Architecture (MASTER)
+│   ├── CPU vs GPU (MASTER)
+│   ├── CUDA (MASTER)
+│   ├── CUDA Kernels (STRONG)
+│   ├── Threads, Blocks & Grids (MASTER)
+│   ├── Memory Hierarchy (MASTER)
+│   ├── Shared Memory (STRONG)
+│   ├── Tensor Cores (STRONG)
+│   ├── CUDA Optimization (STRONG)
+│   ├── Triton (MASTER)
+│   ├── FlashAttention (MASTER)
+│   ├── Quantization Kernels (STRONG)
+│   └── GPU Profiling (MASTER)
+│
+├── 15 Distributed AI
+│   │
+│   ├── Distributed Training (MASTER)
+│   ├── Data Parallelism (MASTER)
+│   ├── Model Parallelism (STRONG)
+│   ├── Tensor Parallelism (MASTER)
+│   ├── Pipeline Parallelism (STRONG)
+│   ├── FSDP (MASTER)
+│   ├── DeepSpeed (STRONG)
+│   ├── ZeRO (MASTER)
+│   ├── Gradient Accumulation (MASTER)
+│   ├── Gradient Checkpointing (MASTER)
+│   ├── Communication (MASTER)
+│   ├── NCCL (STRONG)
+│   └── Distributed Inference (MASTER)
+│
+├── 16 AI Inference
+│   │
+│   ├── Inference Fundamentals (MASTER)
+│   ├── Model Serving (MASTER)
+│   ├── Batch Inference (MASTER)
+│   ├── Streaming Inference (MASTER)
+│   ├── Dynamic Batching (MASTER)
+│   ├── Continuous Batching (MASTER)
+│   ├── KV Cache (MASTER)
+│   ├── Quantization (MASTER)
+│   ├── Speculative Decoding (STRONG)
+│   ├── Model Compilation (STRONG)
+│   ├── ONNX (STRONG)
+│   ├── TensorRT (STRONG)
+│   ├── vLLM (MASTER)
+│   ├── Latency Optimization (MASTER)
+│   ├── Throughput Optimization (MASTER)
+│   └── Cost Optimization (MASTER)
+│
+├── 17 ML Systems & MLOps
+│   │
+│   ├── Experiment Tracking (MASTER)
+│   ├── Model Versioning (MASTER)
+│   ├── Data Versioning (MASTER)
+│   ├── Dataset Management (MASTER)
+│   ├── Training Pipelines (MASTER)
+│   ├── Feature Pipelines (STRONG)
+│   ├── Model Registry (STRONG)
+│   ├── CI/CD for ML (MASTER)
+│   ├── Model Serving (MASTER)
+│   ├── Monitoring (MASTER)
+│   ├── Data Drift (MASTER)
+│   ├── Model Drift (MASTER)
+│   ├── Logging (MASTER)
+│   ├── Observability (MASTER)
+│   ├── Reproducibility (MASTER)
+│   ├── Containers (MASTER)
+│   ├── Docker (MASTER)
+│   ├── Kubernetes (STRONG)
+│   └── Cloud AI (STRONG)
+│
+├── 18 AI Evaluation
+│   │
+│   ├── Evaluation Fundamentals (MASTER)
+│   ├── Benchmarking (MASTER)
+│   ├── Dataset Evaluation (MASTER)
+│   ├── Model Evaluation (MASTER)
+│   ├── LLM Evaluation (MASTER)
+│   ├── RAG Evaluation (MASTER)
+│   ├── Agent Evaluation (MASTER)
+│   ├── Human Evaluation (STRONG)
+│   ├── Automated Evaluation (MASTER)
+│   ├── Hallucination (MASTER)
+│   ├── Factuality (MASTER)
+│   ├── Robustness (MASTER)
+│   ├── Reliability (MASTER)
+│   ├── Safety Evaluation (MASTER)
+│   └── Error Analysis (MASTER)
+│
+├── 19 AI Safety & Alignment
+│   │
+│   ├── AI Safety Fundamentals (STRONG)
+│   ├── Alignment (STRONG)
+│   ├── Interpretability (STRONG)
+│   ├── Mechanistic Interpretability (KNOW)
+│   ├── Robustness (MASTER)
+│   ├── Adversarial Examples (STRONG)
+│   ├── Prompt Injection (MASTER)
+│   ├── Jailbreaks (MASTER)
+│   ├── Data Poisoning (STRONG)
+│   ├── Model Misuse (STRONG)
+│   ├── Privacy (MASTER)
+│   ├── Fairness (STRONG)
+│   ├── Red Teaming (MASTER)
+│   └── AI Governance (KNOW)
+│
+├── 20 Classical AI
+│   │
+│   ├── Search
+│   │   ├── BFS (STRONG)
+│   │   ├── DFS (STRONG)
+│   │   ├── A* (STRONG)
+│   │   └── Heuristic Search (STRONG)
+│   ├── Planning (STRONG)
+│   ├── Constraint Satisfaction (KNOW)
+│   ├── Knowledge Representation (STRONG)
+│   ├── Expert Systems (KNOW)
+│   ├── Logic (STRONG)
+│   ├── Bayesian Networks (STRONG)
+│   └── Symbolic AI (KNOW)
+│
+└── 21 Projects
+    │
+    ├── ML Projects (MASTER)
+    ├── Deep Learning Projects (MASTER)
+    ├── Transformer From Scratch (MASTER)
+    ├── LLM Fine-Tuning (MASTER)
+    ├── RAG System (MASTER)
+    ├── Production RAG (MASTER)
+    ├── AI Agent (MASTER)
+    ├── Multi-Agent System (STRONG)
+    ├── Multimodal AI (MASTER)
+    ├── Model Serving (MASTER)
+    ├── Distributed Training (STRONG)
+    ├── GPU Optimization (STRONG)
+    └── End-to-End AI Product (MASTER)
