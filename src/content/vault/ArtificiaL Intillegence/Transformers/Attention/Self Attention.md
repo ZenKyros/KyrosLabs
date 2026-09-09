@@ -866,4 +866,3 @@ $$
 This produces all Query-Key scores simultaneously.
 
 This makes self-attention highly suitable for parallel computation on GPUs.
-
