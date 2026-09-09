@@ -71,7 +71,7 @@ The helper tells the decoder:
 
 
 ## How Cross-Attention Works
-
+![Cross Attention](image_1.png)
 ### Step 1: Decoder Creates Queries (Q)
 
 For each output token being generated, the decoder creates a **Query vector**.
