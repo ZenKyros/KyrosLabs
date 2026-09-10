@@ -607,7 +607,7 @@ Throughput
 GPU Utilization
 Cost Efficiency
 ```
-![Batching](image_2.png)
+![Batching https://github.com/ZenKyros/Kyplay.git](image_2.png)
 ---
 
 ### Engines Using Continuous Batching
