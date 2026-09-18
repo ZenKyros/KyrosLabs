@@ -38,6 +38,10 @@ function normalizeDisplayLabel(name: string): string {
     label = label.replace(/Proablity/i, "Probability");
   }
 
+  if (label.toLowerCase() === "csharp.net") {
+    label = "C#.net";
+  }
+
   return label;
 }
 
@@ -88,7 +92,8 @@ export function buildFileSystemGraph(): FileSystemGraphData {
     rootFolderName = segments[0] || "";
   }
 
-  // Create root node
+  // Create a root node for each top-level vault folder so separate collections
+  // remain visually separate in the filesystem graph.
   const rootId = "root";
   const rootLabel = normalizeDisplayLabel(rootFolderName) || ROOT_DISPLAY_NAME;
 
@@ -99,6 +104,26 @@ export function buildFileSystemGraph(): FileSystemGraphData {
     path: VAULT_PATH + rootFolderName,
     metadata: { displayName: rootLabel },
   });
+
+  const rootIds = new Map<string, string>([[rootFolderName, rootId]]);
+  for (const folderName of new Set(allPaths.map((filePath) => {
+    const relativePath = filePath.startsWith(VAULT_PATH)
+      ? filePath.slice(VAULT_PATH.length)
+      : filePath;
+    return relativePath.split("/")[0] || "";
+  }))) {
+    if (!folderName || rootIds.has(folderName)) continue;
+    const folderRootId = `root:${folderName}`;
+    rootIds.set(folderName, folderRootId);
+    const folderRootLabel = normalizeDisplayLabel(folderName);
+    nodes.set(folderRootId, {
+      id: folderRootId,
+      label: folderRootLabel,
+      type: "root",
+      path: VAULT_PATH + folderName,
+      metadata: { displayName: folderRootLabel },
+    });
+  }
 
   // Track folders we've already created
   const folderIds: Map<string, string> = new Map(); // path → id
@@ -118,8 +143,8 @@ export function buildFileSystemGraph(): FileSystemGraphData {
     if (!fileBase.trim()) continue;
 
     // Create folder nodes for all parent directories
-    let currentParentId = rootId;
-    let currentPath = rootFolderName;
+    let currentParentId = rootIds.get(segments[0]) ?? rootId;
+    let currentPath = segments[0];
 
     for (let i = 1; i < segments.length - 1; i++) {
       const folderName = segments[i];

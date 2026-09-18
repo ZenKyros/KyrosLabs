@@ -50,6 +50,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   research: "Research",
   // display-only fix for the vault folder's spelling
   "artificial intillegence": "Artificial Intelligence",
+  "csharp.net": "C#.net",
 };
 
 export function categoryLabel(id: string): string {
