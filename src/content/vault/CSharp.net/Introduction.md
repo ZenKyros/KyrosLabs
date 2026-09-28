@@ -18,7 +18,7 @@ namespace HelloWorld
 {
   class Program
   {
-    static void Main(string[] args)
+    static void Main(stringa[] args)
     {
       Console.WriteLine("Hello World!");    
     }
@@ -50,7 +50,11 @@ namespace MyFirstProject
             //Write Method Print the value and stay in the same line
             Console.Write("C#.NET ");
             Console.ReadKey();
+            
+
         }
     }
 }
 ```
+
+## Varaibales and Data Types in C#
