@@ -1,0 +1,220 @@
+# ============================================================
+
+# AGENTIC AI — COMPLETE LEARNING / DEVELOPMENT STACK
+
+# Python 3.11 recommended
+
+# ============================================================
+
+# -------------------------
+
+# Core AI / LLM
+
+# -------------------------
+
+openai
+anthropic
+google-genai
+ollama
+litellm
+
+# -------------------------
+
+# Agent Frameworks
+
+# -------------------------
+
+smolagents
+langchain
+langchain-core
+langchain-community
+langgraph
+langchain-ollama
+llama-index
+
+# -------------------------
+
+# Hugging Face
+
+# -------------------------
+
+transformers
+huggingface-hub
+datasets
+tokenizers
+accelerate
+safetensors
+
+# -------------------------
+
+# RAG / Retrieval
+
+# -------------------------
+
+qdrant-client
+chromadb
+faiss-cpu
+rank-bm25
+
+# -------------------------
+
+# Embeddings / Reranking
+
+# -------------------------
+
+sentence-transformers
+fastembed
+
+# -------------------------
+
+# MCP / Tool Calling
+
+# -------------------------
+
+mcp
+
+# -------------------------
+
+# Web / Search / HTTP Tools
+
+# -------------------------
+
+requests
+httpx
+aiohttp
+beautifulsoup4
+lxml
+
+# -------------------------
+
+# API / Backend
+
+# -------------------------
+
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+
+# -------------------------
+
+# Data / Documents
+
+# -------------------------
+
+numpy
+pandas
+pyyaml
+python-dotenv
+tiktoken
+
+# PDF / Office / Document Processing
+
+pypdf
+python-docx
+openpyxl
+python-multipart
+
+# -------------------------
+
+# Database / Storage
+
+# -------------------------
+
+sqlalchemy
+aiosqlite
+psycopg[binary]
+redis
+
+# -------------------------
+
+# Agent Memory / State
+
+# -------------------------
+
+networkx
+
+# -------------------------
+
+# Evaluation
+
+# -------------------------
+
+ragas
+deepeval
+
+# -------------------------
+
+# Observability / Tracing
+
+# -------------------------
+
+langfuse
+
+# -------------------------
+
+# Experiment Tracking
+
+# -------------------------
+
+mlflow
+
+# -------------------------
+
+# Testing
+
+# -------------------------
+
+pytest
+pytest-asyncio
+pytest-mock
+
+# -------------------------
+
+# Code Quality
+
+# -------------------------
+
+ruff
+black
+mypy
+
+# -------------------------
+
+# CLI / Developer Experience
+
+# -------------------------
+
+rich
+typer
+ipython
+jupyter
+jupyterlab
+
+# -------------------------
+
+# Async / Utilities
+
+# -------------------------
+
+tenacity
+orjson
+
+# -------------------------
+
+# Optional UI / Prototyping
+
+# -------------------------
+
+gradio
+streamlit
+
+# -------------------------
+
+# Security / Validation
+
+# -------------------------
+
+jsonschema
+cryptography
+y
